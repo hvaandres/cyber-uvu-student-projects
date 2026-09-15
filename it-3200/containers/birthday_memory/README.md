@@ -20,23 +20,25 @@ Every birthday is stored permanently in a Postgres database. The calendar highli
 | Frontend | React 18 + Vite, hand-written CSS  |
 | Backend  | Node.js + Express 4 + `pg`         |
 | Database | PostgreSQL 16 (Docker or local)   |
+| Admin UI | pgAdmin 4 (bundled, web-based)      |
+| Containers | Docker Compose (nginx, Node, Postgres, pgAdmin) |
 | Package manager | npm                        |
 
 ## Prerequisites
 
-You need **two** things installed before you can run this app:
+What you need depends on how you plan to run the app (see [Running the app](#running-the-app)):
 
-1. **Node.js 18 or newer** — runs both the API and the build tooling. Ships with `npm`.
-2. **PostgreSQL 14 or newer** — stores the data. You can either install it natively or run the bundled Docker container (easiest).
+- **Fully in Docker (Option A, recommended)** — only **Docker** (with Compose v2, bundled with Docker Desktop).
+- **Local dev mode (Option B)** — **Node.js 18 or newer** (ships with `npm`), plus **PostgreSQL 14 or newer** either installed natively or run via the bundled Docker container.
 
-> **Every operating system installs these differently.** macOS, Windows and Linux each have their own package managers and conventions, so pick the section below that matches your machine. The commands differ, but once both tools are installed, the rest of the setup is identical everywhere.
+> **Every operating system installs these differently.** macOS, Windows and Linux each have their own package managers and conventions, so pick the section below that matches your machine. The commands differ, but once the tools are installed, the rest of the setup is identical everywhere.
 
 Check whether you already have them:
 
 ```bash
-node --version    # want v18.0.0 or higher
+docker --version  # required for Option A; also used for the bundled Postgres in Option B
+node --version    # required for Option B — want v18.0.0 or higher
 npm --version     # ships with Node
-docker --version  # only if you plan to use the bundled database
 ```
 
 If a command prints `command not found`, that tool is missing — install it below.
@@ -149,9 +151,57 @@ There is no CSS framework — all styling is hand-written in `client/src/styles/
 
 ## Running the app
 
+There are two ways to run this app: **fully in Docker** (one command, no local Node/Postgres needed beyond Docker itself) or in **local dev mode** (faster iteration, hot reload).
+
+### Option A — fully in Docker (frontend + backend + database)
+
+First, create your local environment file — the stack refuses to start without a real password:
+
+```bash
+cp .env.example .env
+# then edit .env and set a strong POSTGRES_PASSWORD
+```
+
+Builds and runs all four containers — Postgres, the Express API, the React app served by nginx, and pgAdmin:
+
+```bash
+npm run docker:up
+# or directly: docker compose up -d --build
+```
+
+- Frontend: http://localhost:3000
+- API: http://localhost:4000/api/health
+- Postgres: localhost:5544
+- pgAdmin (DB web UI): http://localhost:5050
+
+The frontend container proxies `/api/*` requests to the backend container internally, so the UI works immediately with no extra configuration. Check status with `docker compose ps` and logs with `docker compose logs -f`. Stop everything with:
+
+```bash
+npm run docker:down
+# or directly: docker compose down
+```
+
+Rebuild after changing source code with `npm run docker:up` again (the `--build` flag rebuilds changed layers).
+
+#### Security hardening
+
+The Compose setup is locked down beyond the defaults:
+
+- **No baked-in credentials.** `POSTGRES_PASSWORD` has no default — `docker compose up` fails fast with a clear error until you set it in `.env` (gitignored). `.env.example` documents the required variables.
+- **Loopback-only port bindings.** All published ports bind to `127.0.0.1`, not `0.0.0.0`, so nothing is reachable from other devices on your network. To allow LAN access (e.g. testing from a phone), change a port entry like `"127.0.0.1:3000:8080"` to `"3000:8080"`.
+- **Network segmentation.** Postgres and the API share a dedicated `backend-net`; the client only has `frontend-net`. The client container has no network route to Postgres at all — it can only ever reach the API.
+- **Non-root containers.** The API runs as the unprivileged `node` user and the frontend runs as the unprivileged `nginx` user (via `nginxinc/nginx-unprivileged`, listening on port 8080 instead of 80).
+- **Read-only root filesystems.** Postgres, the API and the frontend run with `read_only: true`; only the narrow paths that need to write (e.g. Postgres data, `/tmp`, nginx cache/run dirs) are mounted as `tmpfs` or named volumes. pgAdmin is the one exception — its entrypoint writes a config file and re-execs itself, which is incompatible with a read-only root filesystem, so it keeps a writable container filesystem while staying on the isolated `backend-net` and loopback-only port.
+- **Dropped Linux capabilities.** Postgres, the API and the frontend use `cap_drop: [ALL]`. Postgres gets back only the five capabilities its entrypoint needs (`CHOWN`, `DAC_OVERRIDE`, `FOWNER`, `SETGID`, `SETUID`) to initialize as root before dropping to the `postgres` user; the API and frontend need none. pgAdmin's entrypoint (writing config, re-executing itself as a different user) needs a broader set of capabilities, so it keeps its default set rather than dropping them.
+- **`no-new-privileges`** is set on every container to block privilege escalation via setuid binaries.
+- **Resource limits** (`cpus`/`memory`) cap each container to reduce blast radius from a runaway or compromised process.
+- **pgAdmin credentials** (`PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`) also come from `.env` with no defaults, same as the Postgres password.
+
+### Option B — local dev mode (hot reload)
+
 These steps are the **same on macOS, Windows and Linux** once Node and Postgres are installed.
 
-### 1. Get the code and install dependencies
+#### 1. Get the code and install dependencies
 
 ```bash
 git clone <repository-url>
@@ -161,7 +211,7 @@ npm run install:all
 
 `install:all` installs the root, server, and client packages in one pass.
 
-### 2. Configure the database connection
+#### 2. Configure the database connection
 
 macOS / Linux:
 
@@ -175,9 +225,9 @@ Windows PowerShell:
 Copy-Item server\.env.example server\.env
 ```
 
-The defaults in that file already match the bundled Docker database, so you can leave it untouched if you use Docker. See [Configuration](#configuration) to point it elsewhere.
+If you're pointing this at the bundled Docker Postgres (`npm run db:up`), edit `server/.env` so `PGUSER`, `PGPASSWORD` and `PGDATABASE` match `POSTGRES_USER`, `POSTGRES_PASSWORD` and `POSTGRES_DB` in the root `.env` (copy `.env.example` to `.env` first if you haven't already — there are no default passwords). Using your own PostgreSQL install instead? See [Configuration](#configuration) to point `server/.env` at it.
 
-### 3. Start PostgreSQL
+#### 3. Start PostgreSQL
 
 **Option A — bundled Docker database (recommended).** No Postgres install needed, and the `thebirthdates` database is created for you:
 
@@ -196,7 +246,7 @@ createdb thebirthdates
 
 The `birthdays` table and its indexes are created automatically when the API starts — you only need the empty database to exist.
 
-### 4. Add sample data (optional)
+#### 4. Add sample data (optional)
 
 ```bash
 npm --prefix server run seed
@@ -204,7 +254,7 @@ npm --prefix server run seed
 
 Inserts eight well-known people, several with birthdays in the next few days so the countdown and calendar have something to show.
 
-### 5. Start the app
+#### 5. Start the app
 
 ```bash
 npm run dev
@@ -234,7 +284,21 @@ Something else has the port. Stop it, or change the client port in `client/vite.
 **`permission denied while trying to connect to the Docker daemon` (Linux)**
 Your user isn't in the `docker` group. Run `sudo usermod -aG docker $USER`, then log out and back in.
 
+**`Set POSTGRES_PASSWORD in a .env file (see .env.example)`** (or similarly for `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`)
+`docker compose up` refused to start because a required variable isn't set. Run `cp .env.example .env` in the project root, fill in real values, and try again.
+
+**`does not appear to be a valid email address` (pgAdmin)**
+pgAdmin validates `PGADMIN_DEFAULT_EMAIL` strictly and rejects some domains (e.g. `.local`). Use a conventional-looking address such as `admin@example.com` in `.env`.
+
+**Can't reach the app from my phone or another computer on the network**
+Published ports are bound to `127.0.0.1` on purpose (see [Security hardening](#security-hardening)). To allow LAN access, change the relevant port mapping in `docker-compose.yml`, e.g. `"127.0.0.1:3000:8080"` to `"3000:8080"`, then re-run `docker compose up -d`.
+
 ## Configuration
+
+There are **two separate `.env` files** with different scopes — keep them in sync manually if you use both:
+
+- **Root `.env`** (copied from `.env.example`) — read by `docker compose` for Option A. Sets `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD`. Required; there are no built-in default passwords.
+- **`server/.env`** (copied from `server/.env.example`) — read by the Node API only when you run it directly (Option B, `npm run dev:server` / `npm start`). Docker never reads this file.
 
 `server/.env` accepts either a single connection string or individual settings:
 
@@ -242,7 +306,7 @@ Your user isn't in the `docker` group. Run `sudo usermod -aG docker $USER`, then
 # Option A — connection string wins if present
 DATABASE_URL=postgresql://user:password@host:5432/thebirthdates
 
-# Option B — individual settings (defaults match docker-compose.yml)
+# Option B — individual settings (must match the root .env if pointing at the bundled Docker Postgres)
 PGHOST=localhost
 PGPORT=5544
 PGUSER=birthday
@@ -295,19 +359,38 @@ curl -X POST http://localhost:4000/api/birthdays \
 
 ## Inspecting the database
 
-To browse the data with a GUI such as **DBeaver**, **TablePlus**, **pgAdmin** or **Postico**, use these settings (they match the bundled Docker database):
+### Via pgAdmin (bundled, no install needed)
 
-| Setting  | Value            |
-| -------- | ---------------- |
-| Host     | `localhost`      |
-| Port     | `5544`           |
-| Database | `thebirthdates`  |
-| Username | `birthday`       |
-| Password | `birthday`       |
+When running Option A (fully in Docker), a pgAdmin web UI is included:
+
+1. Open http://localhost:5050 and log in with `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD` from your `.env`.
+2. Right-click **Servers** → **Register** → **Server...**
+3. On the **General** tab, give it any name (e.g. `thebirthdates`).
+4. On the **Connection** tab, use:
+   - Host: `postgres` (the service name — pgAdmin reaches it over the internal `backend-net`, not `localhost`)
+   - Port: `5432`
+   - Database: value of `POSTGRES_DB` from `.env` (default `thebirthdates`)
+   - Username: value of `POSTGRES_USER` from `.env` (default `birthday`)
+   - Password: value of `POSTGRES_PASSWORD` from `.env`
+5. Save. The connection persists in the `pgadmin-data` volume, so you won't need to re-enter it next time.
+
+### Via a desktop GUI (DBeaver, TablePlus, Postico, ...)
+
+Use these settings to connect from the host machine:
+
+| Setting  | Value                                  |
+| -------- | -------------------------------------- |
+| Host     | `localhost`                            |
+| Port     | `5544`                                 |
+| Database | `POSTGRES_DB` from `.env` (default `thebirthdates`) |
+| Username | `POSTGRES_USER` from `.env` (default `birthday`)    |
+| Password | `POSTGRES_PASSWORD` from `.env`        |
 
 Note the port is **5544**, not the default 5432 — chosen so it never collides with a PostgreSQL instance you already run. Most GUI tools pre-fill 5432, so remember to change it.
 
-To use the command line instead, the container already includes `psql`:
+### Via the command line
+
+The container already includes `psql`:
 
 ```bash
 docker exec -it thebirthdates-db psql -U birthday -d thebirthdates
@@ -319,7 +402,10 @@ Once connected: `\dt` lists tables, `\d birthdays` shows the schema, `\q` quits.
 
 ```
 birthday_memory/
+├── .env.example                # Docker Compose credentials template (copy to .env)
 ├── client/                     # React front end
+│   ├── Dockerfile              # Multi-stage build served by nginx
+│   ├── nginx.conf              # Static file serving + /api proxy to backend
 │   ├── index.html
 │   ├── vite.config.js          # Dev server + /api proxy to the backend
 │   └── src/
@@ -337,6 +423,7 @@ birthday_memory/
 │       ├── lib/utils.js            # Dates, colors, calendar grid
 │       └── styles/index.css        # All styling
 ├── server/                     # Express API
+│   ├── Dockerfile
 │   ├── .env.example            # Copy to .env and edit
 │   └── src/
 │       ├── index.js            # Server entry point
@@ -345,7 +432,7 @@ birthday_memory/
 │       ├── validate.js         # Server-side validation
 │       ├── dates.js            # Age / next-birthday math
 │       └── seed.js             # Sample data
-├── docker-compose.yml          # Bundled PostgreSQL 16
+├── docker-compose.yml          # Postgres + backend API + frontend (nginx) + pgAdmin
 └── package.json                # Root scripts
 ```
 
@@ -358,7 +445,8 @@ birthday_memory/
 | `npm run dev:client`          | Vite dev server only                  |
 | `npm run build`               | Production build of the client        |
 | `npm start`                   | Run the API without watch mode        |
-| `npm run db:up` / `db:down`   | Start / stop the bundled Postgres     |
+| `npm run db:up` / `db:down`   | Start / stop only the bundled Postgres |
+| `npm run docker:up` / `docker:down` | Build and run (or stop) frontend + backend + database in Docker |
 | `npm --prefix server run seed`| Insert sample birthdays               |
 
 ## Deploying

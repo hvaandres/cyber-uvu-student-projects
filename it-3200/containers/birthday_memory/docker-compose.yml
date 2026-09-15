@@ -4,18 +4,136 @@ services:
     container_name: thebirthdates-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: thebirthdates
-      POSTGRES_USER: birthday
-      POSTGRES_PASSWORD: birthday
+      POSTGRES_DB: ${POSTGRES_DB:-thebirthdates}
+      POSTGRES_USER: ${POSTGRES_USER:-birthday}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a .env file (see .env.example)}
     ports:
-      - "5544:5432"
+      - "127.0.0.1:5544:5432"
     volumes:
       - thebirthdates-data:/var/lib/postgresql/data
+    networks:
+      - backend-net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U birthday -d thebirthdates"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-birthday} -d ${POSTGRES_DB:-thebirthdates}"]
       interval: 5s
       timeout: 5s
       retries: 10
 
+  server:
+    build:
+      context: ./server
+    container_name: birthday-memory-server
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER:-birthday}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in a .env file (see .env.example)}
+      PGDATABASE: ${POSTGRES_DB:-thebirthdates}
+      PGSSL: "false"
+    ports:
+      - "127.0.0.1:4000:4000"
+    networks:
+      - backend-net
+      - frontend-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  client:
+    build:
+      context: ./client
+    container_name: birthday-memory-client
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:8080"
+    networks:
+      - frontend-net
+    depends_on:
+      server:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+  pgadmin:
+    image: dpage/pgadmin4:8.12
+    container_name: birthday-memory-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:?Set PGADMIN_DEFAULT_EMAIL in a .env file (see .env.example)}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Set PGADMIN_DEFAULT_PASSWORD in a .env file (see .env.example)}
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+      PGADMIN_DISABLE_POSTFIX: "True"
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - backend-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+
+networks:
+  frontend-net:
+  backend-net:
+
 volumes:
   thebirthdates-data:
+  pgadmin-data:

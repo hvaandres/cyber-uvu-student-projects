@@ -10,8 +10,10 @@
     "dev:client": "npm --prefix client run dev",
     "build": "npm --prefix client run build",
     "start": "npm --prefix server start",
-    "db:up": "docker compose up -d",
-    "db:down": "docker compose down"
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
