@@ -1,0 +1,30 @@
+=== npm test (node --test) Sat Sep 19 02:46:52 AM UTC 2026 ===
+# Subtest: AuthN: anonymous read is rejected with 401
+ok 1 - AuthN: anonymous read is rejected with 401
+# Subtest: AuthN: anonymous create is rejected with 401
+ok 2 - AuthN: anonymous create is rejected with 401
+# Subtest: AuthN: anonymous delete is rejected with 401
+ok 3 - AuthN: anonymous delete is rejected with 401
+# Subtest: AuthN: wrong bearer token is rejected with 401
+ok 4 - AuthN: wrong bearer token is rejected with 401
+# Subtest: AuthN: valid token is accepted (app still works)
+ok 5 - AuthN: valid token is accepted (app still works)
+# Subtest: Headers: X-Powered-By is not disclosed
+ok 6 - Headers: X-Powered-By is not disclosed
+# Subtest: Headers: security headers from helmet are present
+ok 7 - Headers: security headers from helmet are present
+# Subtest: CORS: an unlisted origin is not reflected
+ok 8 - CORS: an unlisted origin is not reflected
+# Subtest: CORS: the allowlisted origin is reflected
+ok 9 - CORS: the allowlisted origin is reflected
+# Subtest: Input: malformed JSON returns 400, not 500
+ok 10 - Input: malformed JSON returns 400, not 500
+# Subtest: DoS: oversized body is rejected with 413
+ok 11 - DoS: oversized body is rejected with 413
+# Subtest: DoS: list page size is capped at 100 even if a larger limit is asked
+ok 12 - DoS: list page size is capped at 100 even if a larger limit is asked
+# Subtest: Injection: SQL metacharacters in q are treated as a literal (no error, no dump)
+ok 13 - Injection: SQL metacharacters in q are treated as a literal (no error, no dump)
+# tests 13
+# pass 13
+# fail 0

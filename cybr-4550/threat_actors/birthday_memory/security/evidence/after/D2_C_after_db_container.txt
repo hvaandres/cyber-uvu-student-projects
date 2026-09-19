@@ -1,0 +1,32 @@
+=== AFTER: Database + Container posture ===
+Date (UTC): Sat Sep 19 02:46:02 AM UTC 2026
+
+########## D2-AFTER: app role is least-privilege (not superuser) ##########
+ rolname | rolsuper | rolcreatedb | rolcreaterole 
+---------+----------+-------------+---------------
+ bm_app  | f        | f           | f
+(1 row)
+
+bm_app DDL attempt (denied):
+ERROR:  permission denied for schema public
+
+########## C-AFTER: port bound to loopback only ##########
+NAME               PORTS
+thebirthdates-db   127.0.0.1:5544->5432/tcp
+Host primary IP for reference: 192.168.1.169
+External reachability test (should FAIL/timeout — bound to 127.0.0.1):
+bash: connect: Connection refused
+bash: line 1: /dev/tcp/192.168.1.169/5544: Connection refused
+  NOT reachable on 192.168.1.169:5544 (good)
+Loopback test (should succeed):
+  reachable on 127.0.0.1:5544 (expected)
+
+########## C-AFTER: runtime hardening applied ##########
+  ReadonlyRootfs: false
+  Privileged: false
+  CapDrop: [ALL]
+  CapAdd: [CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_SETGID CAP_SETUID]
+  SecurityOpt: [no-new-privileges:true]
+  Memory(bytes): 536870912
+  NanoCpus: 1000000000
+  PidsLimit: 200

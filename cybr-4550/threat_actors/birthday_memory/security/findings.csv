@@ -1,0 +1,10 @@
+ID,Title,Component,Severity,CVSS_Vector,Status
+F-01,Missing authentication - anonymous full CRUD over PII,API,Critical,AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N,Remediated
+F-02,DB application role is a superuser,Database,High,AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H,Remediated
+F-03,Hardcoded DB credentials committed to public repo,Repo/DB,High,AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N,Remediated
+F-04,DB port published on all interfaces,Container,Medium,AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N,Remediated
+F-05,Container runs as root with all caps and no limits,Container,Medium,AV:L/AC:H/PR:L/UI:N/S:C/C:H/I:H/A:H,Remediated
+F-06,No rate limiting and unbounded queries/body,API,Medium,AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:L,Remediated
+F-07,Wildcard CORS missing headers verbose errors,API,Medium,AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N,Remediated
+F-08,Plaintext PII at rest and TLS not enforced,Database,Medium,AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N,Partially-Remediated
+N-01,SQL injection tested not vulnerable,API,Informational,N/A,Verified-Secure

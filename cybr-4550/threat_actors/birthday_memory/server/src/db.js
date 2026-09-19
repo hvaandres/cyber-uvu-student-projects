@@ -8,13 +8,22 @@ const {
   DATABASE_URL,
   PGHOST = 'localhost',
   PGPORT = '5544',
-  PGUSER = 'birthday',
-  PGPASSWORD = 'birthday',
+  PGUSER = 'bm_app',
+  PGPASSWORD,
   PGDATABASE = 'thebirthdates',
   PGSSL,
 } = process.env;
 
-const ssl = PGSSL === 'true' ? { rejectUnauthorized: false } : undefined;
+// Fail closed: never fall back to a hardcoded/default database password.
+if (!DATABASE_URL && !PGPASSWORD) {
+  console.error(
+    '[db] No database password configured. Set PGPASSWORD (or DATABASE_URL) ' +
+    'in server/.env. Refusing to start with an implicit/blank credential.',
+  );
+  process.exit(1);
+}
+
+const ssl = PGSSL === 'true' ? { rejectUnauthorized: true } : undefined;
 
 export const pool = DATABASE_URL
   ? new pg.Pool({ connectionString: DATABASE_URL, ssl })
@@ -25,40 +34,30 @@ export const pool = DATABASE_URL
       password: PGPASSWORD,
       database: PGDATABASE,
       ssl,
+      max: 10,
+      // Bound how long a single statement may run: caps a runaway/DoS query.
+      statement_timeout: 5000,
     });
 
 pool.on('error', (error) => {
   console.error('[db] unexpected pool error:', error.message);
 });
 
-export async function initSchema() {
-  await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS birthdays (
-      id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      first_name  text NOT NULL,
-      last_name   text NOT NULL,
-      birthdate   date NOT NULL,
-      phone       text,
-      email       text,
-      created_at  timestamptz NOT NULL DEFAULT now(),
-      updated_at  timestamptz NOT NULL DEFAULT now()
-    )
-  `);
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS birthdays_name_idx
-      ON birthdays (lower(last_name), lower(first_name))
-  `);
-
-  await pool.query(`
-    CREATE INDEX IF NOT EXISTS birthdays_month_day_idx
-      ON birthdays (
-        (EXTRACT(MONTH FROM birthdate)),
-        (EXTRACT(DAY FROM birthdate))
-      )
-  `);
+/**
+ * Verifies the expected schema exists. The low-privilege application role has
+ * no DDL rights, so the table/role/grants are created once at container init by
+ * db/init/01-schema.sh. This function only confirms the app can reach its table.
+ */
+export async function assertSchema() {
+  const { rows } = await pool.query(
+    `SELECT to_regclass('public.birthdays') IS NOT NULL AS present`,
+  );
+  if (!rows[0]?.present) {
+    throw new Error(
+      'Table "birthdays" is missing. Recreate the DB container so the init ' +
+      'script runs, or apply db/init/01-schema.sh against an existing database.',
+    );
+  }
 }
 
 export function mapRow(row) {
