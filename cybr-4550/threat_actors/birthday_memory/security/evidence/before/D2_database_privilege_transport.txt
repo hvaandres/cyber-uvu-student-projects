@@ -1,0 +1,33 @@
+=== DB PRIVILEGE & TRANSPORT (Domain 2) ===
+Date (UTC): Sat Sep 19 02:17:36 AM UTC 2026
+
+########## D2-01: App connects as SUPERUSER? ##########
+ current_user | session_user 
+--------------+--------------
+ birthday     | birthday
+(1 row)
+
+ rolname  | rolsuper | rolcreatedb | rolcreaterole 
+----------+----------+-------------+---------------
+ birthday | t        | t           | t
+(1 row)
+
+
+########## D2-02: Can the app role DROP the table / create tables? (excess privilege) ##########
+CREATE TABLE
+DROP TABLE
+>>> App role CAN create/drop tables (owner-level DDL).
+
+########## D2-03: PII stored in plaintext ##########
+ first_name | last_name | birthdate  |      phone      |       email       
+------------+-----------+------------+-----------------+-------------------
+ Ada        | Lovelace  | 1990-09-19 | +1 415 555 0101 | ada@example.com
+ Grace      | Hopper    | 1986-09-22 | +1 415 555 0102 | grace@example.com
+ Alan       | Turing    | 1978-10-01 | +1 415 555 0103 | alan@example.com
+(3 rows)
+
+
+########## D2-04: Transport — SSL disabled (PGSSL=false), password 'birthday' trivial ##########
+../../../server/.env.example:11:PGPASSWORD=birthday
+../../../server/.env.example:15:PGSSL=false
+../../../docker-compose.yml:9:      POSTGRES_PASSWORD: birthday

@@ -1,0 +1,26 @@
+=== CONTAINER POSTURE (Domain 3) ===
+Date (UTC): Sat Sep 19 02:18:11 AM UTC 2026
+
+########## C-01: Port published to ALL interfaces (0.0.0.0)? ##########
+NAME               PORTS
+thebirthdates-db   0.0.0.0:5544->5432/tcp, [::]:5544->5432/tcp
+(0.0.0.0:5544->5432 means reachable from any host route, not just 127.0.0.1)
+
+########## C-02: Runtime user — running as root inside container? ##########
+uid=0(root) gid=0(root) groups=0(root),0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)
+
+########## C-03: No resource limits, no read-only rootfs, no cap drop, no no-new-privileges ##########
+  User: 
+  ReadonlyRootfs: false
+  Privileged: false
+  CapDrop: <no value>
+  CapAdd: <no value>
+  SecurityOpt: <no value>
+  Memory: 0
+  NanoCpus: 0
+  PidsLimit: <no value>
+  RestartPolicy: unless-stopped
+
+########## C-04: Image digest / base ##########
+  Image: postgres:16-alpine
+  RepoDigest: postgres@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb

@@ -1,0 +1,28 @@
+=== BASELINE EVIDENCE CAPTURE ===
+Date (UTC): Sat Sep 19 02:16:20 AM UTC 2026
+Host: jhansen-21mas0np00 | Target: http://localhost:4000 (localhost only)
+
+########## B-01: Unauthenticated READ of all PII (GET /api/birthdays) ##########
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 2504
+ETag: W/"9c8-yMdH/TWGYAeMbAWeZgmKCPYB8yw"
+Date: Sat, 19 Sep 2026 02:16:20 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+[{"id":"0d19d68c-fc87-4280-bfab-93bc1999c553","firstName":"Margaret","lastName":"Hamilton","birthdate":"1984-02-29","phone":"+1 415 555 0106","email":"margaret@example.com","createdAt":"2026-09-19T02:15:47.504Z","updatedAt":"2026-09-19T02:15:47.504Z","age":42,"turningAge":43,"daysUntil":163,"nextBirthday":"2027-02-28"},{"id":"e2bf387c-7acf-4cb0-be5d-ae66e7bb51a4","firstName":"Tim","lastName":"Berners-Lee","birthdate":"1999-06-08","phone":"+1 415 555 0108","email":"tim@example.com","createdAt":"2026-09-19T02:15:47.506Z","updatedAt":"2026-09-19T02:15:47.506Z","age":27,"turningAge":28,"daysUntil":263,"nextBirthday":"2027-06-08"},{"id":"c76b97e5-c92e-439c-a58b-5ab740ebadcc","firstName":"Linus","lastName":"Torvalds","birthdate":"1991-08-17","phone":"+1 415 555 0105","email":"linus@example.com","createdAt":"2026-09-19T02:15:47.504Z","updatedAt":"2026-09-19T02:15:47.504Z","age":35,"turningAge":36,"daysUntil":333,"nextBirthday":"2027-08-17"},{"id":"f414a6d3-1e2b-41fd-9375-2a4f20e93eb0","firstName":"Ada","lastName":"Lovelace","birthdate":"1990-09-19","phone":"+1 415 555 0101","email":"ada@example.com","createdAt":"2026-09-19T02:15:47.500Z","updatedAt":"2026-09-19T02:15:47.500Z","age":35,"turningAge":36,"daysUntil":1,"nextBirthday":"2026-09-19"},{"id":"6902aad6-fbf1-4aba-a326-edb7736c43bd","firstName":"Grace","lastName":"Hopper","birthdate":"1986-09-22","phone":"+1 415 555 0102","email":"grace@example.com","createdAt":"2026-09-19T02:15:47.501Z","updatedAt":"2026-09-19T02:15:47.501Z","age":39,"turningAge":40,"daysUntil":4,"nextBirthday":"2026-09-22"},{"id":"e9061697-f6d9-466a-884e-9a3c8901dc87","firstName":"Alan","lastName":"Turing","birthdate":"1978-10-01","phone":"+1 415 555 0103","email":"alan@example.com","createdAt":"2026-09-19T02:15:47.502Z","updatedAt":"2026-09-19T02:15:47.502Z","age":47,"turningAge":48,"daysUntil":13,"nextBirthday":"2026-10-01"},{"id":"d8a0687e-779e-4188-ad6e-47cee18ef6a7","firstName":"Katherine","lastName":"Johnson","birthdate":"1995-10-15","phone":"+1 415 555 0104","email":"katherine@example.com","createdAt":"2026-09-19T02:15:47.503Z","updatedAt":"2026-09-19T02:15:47.503Z","age":30,"turningAge":31,"daysUntil":27,"nextBirthday":"2026-10-15"},{"id":"71cef4bd-9dfa-473c-80de-c700f7295a36","firstName":"Hedy","lastName":"Lamarr","birthdate":"1974-11-09","phone":"+1 415 555 0107","email":"hedy@example.com","createdAt":"2026-09-19T02:15:47.505Z","updatedAt":"2026-09-19T02:15:47.505Z","age":51,"turningAge":52,"daysUntil":52,"nextBirthday":"2026-11-09"}]
+########## B-02: Unauthenticated CREATE (POST /api/birthdays) ##########
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 319
+ETag: W/"13f-1rGvrumMaV/coa4dS3m7kOQPG2M"
+Date: Sat, 19 Sep 2026 02:16:20 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":"6e0f0dda-b625-4795-acf7-6b08a88fa272","firstName":"Attacker","lastName":"Inserted","birthdate":"1990-01-01","phone":"+1 555 000 0000","email":"attacker@example.com","createdAt":"2026-09-19T02:16:20.954Z","updatedAt":"2026-09-19T02:16:20.954Z","age":36,"turningAge":37,"daysUntil":105,"nextBirthday":"2027-01-01"}
