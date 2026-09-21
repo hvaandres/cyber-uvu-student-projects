@@ -1,0 +1,11 @@
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 312
+ETag: W/"138-u3RxM2kDcQYEs6dagTphBuSQI1c"
+Date: Mon, 21 Sep 2026 18:21:03 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":"a61e1ad8-f2d7-4728-a0c9-489d8c0be50e","firstName":"Audit","lastName":"Injected","birthdate":"1995-05-05","phone":"+1 415 555 0199","email":"audit@test.local","createdAt":"2026-09-21T18:21:03.886Z","updatedAt":"2026-09-21T18:21:03.886Z","age":31,"turningAge":32,"daysUntil":226,"nextBirthday":"2027-05-05"}

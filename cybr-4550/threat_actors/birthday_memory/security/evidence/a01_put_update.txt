@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 317
+ETag: W/"13d-IIOw6JiLkSeY6K7JAL+tKgb08mc"
+Date: Mon, 21 Sep 2026 18:21:28 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":"517bccbb-73fc-4000-9b69-141575892c54","firstName":"Tampered","lastName":"Record","birthdate":"1984-02-29","phone":"+1 415 555 9999","email":"tampered@example.com","createdAt":"2026-09-21T18:06:17.772Z","updatedAt":"2026-09-21T18:21:28.909Z","age":42,"turningAge":43,"daysUntil":160,"nextBirthday":"2027-02-28"}
