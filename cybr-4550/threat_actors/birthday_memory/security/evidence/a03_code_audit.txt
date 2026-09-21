@@ -1,0 +1,62 @@
+server/src/db.js-32-});
+server/src/db.js-33-
+server/src/db.js-34-export async function initSchema() {
+server/src/db.js:35:  await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
+server/src/db.js-36-
+server/src/db.js:37:  await pool.query(`
+server/src/db.js-38-    CREATE TABLE IF NOT EXISTS birthdays (
+server/src/db.js-39-      id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+server/src/db.js-40-      first_name  text NOT NULL,
+--
+server/src/db.js-47-    )
+server/src/db.js-48-  `);
+server/src/db.js-49-
+server/src/db.js:50:  await pool.query(`
+server/src/db.js-51-    CREATE INDEX IF NOT EXISTS birthdays_name_idx
+server/src/db.js-52-      ON birthdays (lower(last_name), lower(first_name))
+server/src/db.js-53-  `);
+server/src/db.js-54-
+server/src/db.js:55:  await pool.query(`
+server/src/db.js-56-    CREATE INDEX IF NOT EXISTS birthdays_month_day_idx
+server/src/db.js-57-      ON birthdays (
+server/src/db.js-58-        (EXTRACT(MONTH FROM birthdate)),
+--
+server/src/routes.js-44-
+server/src/routes.js-45-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+server/src/routes.js-46-
+server/src/routes.js:47:    const { rows } = await pool.query(
+server/src/routes.js-48-      `SELECT ${SELECT_COLUMNS}
+server/src/routes.js-49-         FROM birthdays
+server/src/routes.js-50-         ${where}
+--
+server/src/routes.js-65-    const days = Number(req.query.days);
+server/src/routes.js-66-    const window = Number.isFinite(days) && days > 0 ? Math.min(days, 366) : 30;
+server/src/routes.js-67-
+server/src/routes.js:68:    const { rows } = await pool.query(`SELECT ${SELECT_COLUMNS} FROM birthdays`);
+server/src/routes.js-69-
+server/src/routes.js-70-    const upcoming = rows
+server/src/routes.js-71-      .map((row) => decorate(mapRow(row)))
+--
+server/src/routes.js-83-    const { errors, value } = validateBirthday(req.body);
+server/src/routes.js-84-    if (errors) return res.status(422).json({ errors });
+server/src/routes.js-85-
+server/src/routes.js:86:    const { rows } = await pool.query(
+server/src/routes.js-87-      `INSERT INTO birthdays (first_name, last_name, birthdate, phone, email)
+server/src/routes.js-88-       VALUES ($1, $2, $3, $4, $5)
+server/src/routes.js-89-       RETURNING ${SELECT_COLUMNS}`,
+--
+server/src/routes.js-105-    const { errors, value } = validateBirthday(req.body);
+server/src/routes.js-106-    if (errors) return res.status(422).json({ errors });
+server/src/routes.js-107-
+server/src/routes.js:108:    const { rows } = await pool.query(
+server/src/routes.js-109-      `UPDATE birthdays
+server/src/routes.js-110-          SET first_name = $1,
+server/src/routes.js-111-              last_name  = $2,
+--
+server/src/routes.js-138-      return res.status(404).json({ error: 'Birthday not found.' });
+server/src/routes.js-139-    }
+server/src/routes.js-140-
+server/src/routes.js:141:    const { rowCount } = await pool.query('DELETE FROM birthdays WHERE id = $1', [
+server/src/routes.js-142-      req.params.id,
+server/src/routes.js-143-    ]);
+server/src/routes.js-144-
