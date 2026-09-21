@@ -1,0 +1,54 @@
+=== AFTER: Authentication now enforced (F-01) ===
+Date (UTC): Sat Sep 19 02:45:18 AM UTC 2026  Target: http://localhost:4000 (127.0.0.1 only)
+
+########## A-01: Unauthenticated READ now 401 ##########
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none';frame-ancestors 'none'
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0
+
+########## A-02: Unauthenticated CREATE now 401 ##########
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none';frame-ancestors 'none'
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+
+########## A-03: Bad token rejected (401) ##########
+HTTP/1.1 401 Unauthorized
+Content-Security-Policy: default-src 'none';frame-ancestors 'none'
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+
+########## A-04: AUTHORIZED request still succeeds (200) — did not break the app ##########
+HTTP/1.1 200 OK
+Content-Security-Policy: default-src 'none';frame-ancestors 'none'
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
+Origin-Agent-Cluster: ?1
+Referrer-Policy: no-referrer
+X-Content-Type-Options: nosniff
+X-DNS-Prefetch-Control: off
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Permitted-Cross-Domain-Policies: none
+X-XSS-Protection: 0

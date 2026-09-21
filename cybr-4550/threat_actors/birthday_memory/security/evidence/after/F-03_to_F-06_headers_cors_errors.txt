@@ -1,0 +1,26 @@
+=== AFTER: headers / CORS / body / errors / x-powered-by (F-03..F-06) ===
+Date (UTC): Sat Sep 19 02:45:34 AM UTC 2026
+
+########## A-05: X-Powered-By header REMOVED ##########
+grep result (empty = removed):
+  (no X-Powered-By header — removed)
+
+########## A-06: CORS wildcard GONE — evil origin gets no ACAO ##########
+Evil origin:
+  (no ACAO for evil origin — blocked)
+Allowed origin (localhost:5173):
+Access-Control-Allow-Origin: http://localhost:5173
+
+########## A-07: Malformed JSON now 400 (was 500) ##########
+HTTP/1.1 400 Bad Request
+{"error":"Malformed JSON body."}
+
+########## A-08: Oversized body now 413 (16kb limit) ##########
+HTTP 413
+
+########## A-09: Health no longer leaks DB error detail ##########
+{"status":"ok"}
+
+########## A-10: Pagination caps result size (limit clamped to 100) ##########
+Requesting limit=99999 returns at most 100 rows:
+8

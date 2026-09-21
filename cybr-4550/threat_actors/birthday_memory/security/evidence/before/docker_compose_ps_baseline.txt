@@ -1,0 +1,26 @@
+=== BASELINE docker compose ps (unmodified config) Sat Sep 19 02:20:01 AM UTC 2026 ===
+NAME               IMAGE                COMMAND                  SERVICE    CREATED         STATUS                   PORTS
+thebirthdates-db   postgres:16-alpine   "docker-entrypoint.s…"   postgres   4 minutes ago   Up 4 minutes (healthy)   0.0.0.0:5544->5432/tcp, [::]:5544->5432/tcp
+
+=== unmodified docker-compose.yml ===
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: thebirthdates-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: thebirthdates
+      POSTGRES_USER: birthday
+      POSTGRES_PASSWORD: birthday
+    ports:
+      - "5544:5432"
+    volumes:
+      - thebirthdates-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U birthday -d thebirthdates"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  thebirthdates-data:

@@ -1,21 +1,51 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    # Pinned by digest for supply-chain integrity (prevents tag mutation).
+    # Update deliberately after re-scanning; see SECURITY.md patch cadence.
+    image: postgres:16-alpine@sha256:3c5c8892d184f738f4fe282d14ddaa613a38f00f4189d2d94725ebe6f2909ddb
     container_name: thebirthdates-db
     restart: unless-stopped
+    # --- Secrets come from .env (gitignored). No credential is committed. ---
     environment:
-      POSTGRES_DB: thebirthdates
-      POSTGRES_USER: birthday
-      POSTGRES_PASSWORD: birthday
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      APP_DB_USER: ${APP_DB_USER:?set APP_DB_USER in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
     ports:
-      - "5544:5432"
+      # Bind to loopback ONLY. Previously 5544 was published on 0.0.0.0.
+      - "127.0.0.1:5544:5432"
     volumes:
       - thebirthdates-data:/var/lib/postgresql/data
+      # One-time schema + least-privilege role creation.
+      - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U birthday -d thebirthdates"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    # --- Container runtime hardening ---
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      # Postgres entrypoint drops from root to the postgres user; SETUID/SETGID
+      # and CHOWN of the data dir are the only privileges it needs to do so.
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    # Resource ceilings so a runaway query/connection storm can't exhaust the host.
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 200
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   thebirthdates-data:

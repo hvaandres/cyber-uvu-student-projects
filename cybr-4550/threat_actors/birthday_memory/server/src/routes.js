@@ -7,6 +7,16 @@ const router = Router();
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+const MAX_PAGE_SIZE = 100;
+const MAX_SCAN_ROWS = 5000;
+
+/** Parses a query param into an integer clamped to [min, max], else fallback. */
+function clampInt(raw, fallback, min, max) {
+  const n = Number(raw);
+  if (!Number.isInteger(n)) return fallback;
+  return Math.min(Math.max(n, min), max);
+}
+
 const SELECT_COLUMNS = `
   id, first_name, last_name, birthdate, phone, email, created_at, updated_at
 `;
@@ -44,13 +54,23 @@ router.get(
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
+    // Bound the result set so a single request can never pull an unbounded
+    // number of PII rows into memory (resource-exhaustion / mass-scrape guard).
+    const limit = clampInt(req.query.limit, 50, 1, MAX_PAGE_SIZE);
+    const offset = clampInt(req.query.offset, 0, 0, Number.MAX_SAFE_INTEGER);
+    params.push(limit);
+    const limitP = `$${params.length}`;
+    params.push(offset);
+    const offsetP = `$${params.length}`;
+
     const { rows } = await pool.query(
       `SELECT ${SELECT_COLUMNS}
          FROM birthdays
          ${where}
         ORDER BY EXTRACT(MONTH FROM birthdate),
                  EXTRACT(DAY FROM birthdate),
-                 lower(first_name)`,
+                 lower(first_name)
+        LIMIT ${limitP} OFFSET ${offsetP}`,
       params,
     );
 
@@ -65,7 +85,11 @@ router.get(
     const days = Number(req.query.days);
     const window = Number.isFinite(days) && days > 0 ? Math.min(days, 366) : 30;
 
-    const { rows } = await pool.query(`SELECT ${SELECT_COLUMNS} FROM birthdays`);
+    // Cap rows scanned into the Node process. For an internal directory this is
+    // ample; it turns a previously unbounded full-table read into a bounded one.
+    const { rows } = await pool.query(
+      `SELECT ${SELECT_COLUMNS} FROM birthdays LIMIT ${MAX_SCAN_ROWS}`,
+    );
 
     const upcoming = rows
       .map((row) => decorate(mapRow(row)))

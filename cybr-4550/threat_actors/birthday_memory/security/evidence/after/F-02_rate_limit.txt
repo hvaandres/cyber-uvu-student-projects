@@ -1,0 +1,11 @@
+=== AFTER: rate limiting (F-02) ===
+Date (UTC): Sat Sep 19 02:45:47 AM UTC 2026
+Sending 110 authorized requests; limit is 100/15min. Expect 429s to appear.
+     93 200
+     17 429
+
+RateLimit headers on a request:
+RateLimit-Policy: 100;w=900
+RateLimit-Limit: 100
+RateLimit-Remaining: 0
+RateLimit-Reset: 871

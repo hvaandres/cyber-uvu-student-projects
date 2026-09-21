@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { pool, initSchema } from './db.js';
+import { pool, assertSchema } from './db.js';
 
 /**
  * Builds a date `offset` days from today, keeping the given birth year.
@@ -31,7 +31,7 @@ const people = [
 ];
 
 async function seed() {
-  await initSchema();
+  await assertSchema();
 
   const { rows } = await pool.query('SELECT count(*)::int AS count FROM birthdays');
   if (rows[0].count > 0) {

@@ -1,0 +1,27 @@
+=== B-03/B-04: Unauthenticated MODIFY and DELETE ===
+Date (UTC): Sat Sep 19 02:16:29 AM UTC 2026
+Target record id: 6e0f0dda-b625-4795-acf7-6b08a88fa272
+
+########## B-03: Unauthenticated UPDATE (PUT) ##########
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Content-Length: 317
+ETag: W/"13d-bDaXlovGL5Bdi4r54++5u3ubPxU"
+Date: Sat, 19 Sep 2026 02:16:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"id":"6e0f0dda-b625-4795-acf7-6b08a88fa272","firstName":"Tampered","lastName":"ByAnon","birthdate":"1980-05-05","phone":"+1 555 111 2222","email":"tampered@example.com","createdAt":"2026-09-19T02:16:20.954Z","updatedAt":"2026-09-19T02:16:29.236Z","age":46,"turningAge":47,"daysUntil":229,"nextBirthday":"2027-05-05"}
+########## B-04: Unauthenticated DELETE ##########
+HTTP/1.1 204 No Content
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Date: Sat, 19 Sep 2026 02:16:29 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+
+Record count after deletion:
+8

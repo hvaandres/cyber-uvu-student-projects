@@ -1,0 +1,25 @@
+digraph DFD {
+  rankdir=LR;
+  bgcolor="white";
+  node [fontname="DejaVu Sans", fontsize=11, style="filled", color="#333333"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#444444"];
+
+  browser [label="React SPA\n(browser — untrusted)", shape=box, fillcolor="#FDE7E9"];
+
+  subgraph cluster_host {
+    label="TB: Host trust boundary (developer laptop / server)";
+    style="dashed"; color="#1F6FEB"; fontname="DejaVu Sans"; fontsize=10;
+    api [label="Express API\n127.0.0.1:4000\n(bearer auth, CORS,\nrate limit, validation)", shape=box, fillcolor="#E6F0FF"];
+
+    subgraph cluster_db {
+      label="TB: Container trust boundary\n(cap_drop ALL, no-new-privileges, limits)";
+      style="dashed"; color="#2DA44E"; fontsize=10;
+      db [label="PostgreSQL 16\n127.0.0.1:5544\nrole: bm_app (least-priv)", shape=cylinder, fillcolor="#E6FFED"];
+    }
+  }
+
+  browser -> api [label=" HTTPS + Bearer token\n (TB1)"];
+  api -> db [label=" Parameterized SQL\n least-priv role (TB2)"];
+  db -> api [label=" rows", style=dashed];
+  api -> browser [label=" JSON (no wildcard CORS)", style=dashed];
+}

@@ -44,7 +44,7 @@ export function validateBirthday(body = {}) {
     errors.phone = 'Telephone number looks invalid.';
   }
 
-  if (email && !EMAIL_RE.test(email)) {
+  if (email && (email.length > 254 || !EMAIL_RE.test(email))) {
     errors.email = 'Email address looks invalid.';
   }
 

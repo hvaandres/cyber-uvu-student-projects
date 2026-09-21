@@ -1,0 +1,20 @@
+=== B-05: SQL INJECTION TEST (the deliberate trap) ===
+Date (UTC): Sat Sep 19 02:16:59 AM UTC 2026
+Hypothesis: 'q' filter is parameterized => NOT injectable. Testing to confirm.
+
+########## Test 1: classic tautology in q ##########
+HTTP/1.1 200 OK
+[]
+-- raw body (truncated):
+[]
+
+########## Test 2: UNION attempt ##########
+[]
+
+########## Test 3: ILIKE literal-match proof — search for the % wildcard behavior ##########
+Searching q=zzz_nomatch_zzz (should return empty array, proving input is a bound literal):
+[]
+
+########## Test 4: attempt to break out with single quote returns normal (no 500) ##########
+HTTP/1.1 200 OK
+Server log check (no SQL syntax error means parameterized):

@@ -1,5 +1,11 @@
 const BASE = import.meta.env.VITE_API_URL ?? '';
 
+// Bearer token for the API. Supplied via VITE_API_TOKEN at build/dev time.
+// NOTE: in a browser SPA any client-side token is ultimately visible to the
+// user; this gates casual/anonymous access and machine callers. Per-user auth
+// is the documented next step (see SECURITY.md / remediation roadmap).
+const TOKEN = import.meta.env.VITE_API_TOKEN ?? '';
+
 /** Error carrying per-field validation messages from the API. */
 export class ApiError extends Error {
   constructor(message, { status, fieldErrors } = {}) {
@@ -14,8 +20,12 @@ async function request(path, options = {}) {
   let response;
   try {
     response = await fetch(`${BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json' },
       ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
+        ...options.headers,
+      },
     });
   } catch {
     throw new ApiError('Cannot reach the server. Is the API running?');
