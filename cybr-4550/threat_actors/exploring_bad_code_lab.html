@@ -1,0 +1,487 @@
+
+<div style="max-width: 940px; margin: 0 auto; font-family: -apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; line-height: 1.65; color: #14142b;">
+    <header style="background: linear-gradient(135deg,#0b1020 0%,#3b0764 45%,#9f1239 100%); color: #ffffff; padding: 2.25rem 1.85rem; border-radius: 16px; margin-bottom: 1.75rem;">
+        <p style="font-size: 0.78rem; color: #fbcfe8; margin: 0 0 0.5rem 0;">CYBR 4550 &middot; Threat Actors &middot; Applied Security Assessment</p>
+        <h1 id="assignment-title" style="font-size: 2rem; line-height: 1.25; margin: 0 0 0.7rem 0; color: #ffffff;"><span aria-hidden="true">🕯️</span> Operation Candlelight: Someone Left the Front Door Open</h1>
+        <p style="font-size: 1.08rem; margin: 0 0 1.1rem 0; color: #f1e7ff; max-width: 64ch;">We shipped an application that stores real people's names, birthdates, phone numbers, and email addresses &mdash; and we never added a single line of authentication. You are the security engineer we just hired. Find out how bad it is, or fix it. Then defend your work in front of the board.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;"><span style="background: #ffffff; color: #9f1239; font-size: 0.84rem; padding: 0.32rem 0.8rem; border-radius: 999px;"><span aria-hidden="true">⏱</span> Est. time: 5- 10 hours, depending on how good you are with investigations</span> <span style="background: #ffffff; color: #5b21b6; font-size: 0.84rem; padding: 0.32rem 0.8rem; border-radius: 999px;"><span aria-hidden="true">📶</span> Difficulty: Advanced</span> <span style="background: #ffffff; color: #0f766e; font-size: 0.84rem; padding: 0.32rem 0.8rem; border-radius: 999px;"><span aria-hidden="true">🧭</span> You choose your track</span> <span style="background: #ffffff; color: #1e3a8a; font-size: 0.84rem; padding: 0.32rem 0.8rem; border-radius: 999px;"><span aria-hidden="true">💼</span> Portfolio deliverable</span> <span style="background: #fef08a; color: #713f12; font-size: 0.84rem; padding: 0.32rem 0.8rem; border-radius: 999px;"><span aria-hidden="true">🎤</span> Oral defense required</span></div>
+    </header>
+    <section style="background: #fffbeb; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem; border: 3px solid #b45309;" aria-labelledby="roe-heading">
+        <h2 id="roe-heading" style="color: #7c2d12; margin-top: 0;"><span aria-hidden="true">⚠️</span> Read This First &mdash; Rules of Engagement</h2>
+        <p style="color: #7c2d12; margin-top: 0;">This section is not boilerplate. Violating it is an academic integrity issue and, depending on what you touch, a criminal one.</p>
+        <p><strong>Authorized scope &mdash; and nothing else:</strong></p>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>Permitted:</strong> <em>Your own fork</em> of this project, running on <em>your own machine</em>, bound to <code>localhost</code> / <code>127.0.0.1</code>, with data <em>you</em> seeded.</li>
+            <li><strong>Permitted:</strong> Containers you built yourself, on your own Docker daemon.</li>
+            <li><strong>Forbidden:</strong> The instructor's repository, any classmate's machine or fork, any UVU network host, any cloud instance you do not personally own, and any third-party service.</li>
+            <li><strong>Forbidden:</strong> Seeding the database with real personal information about real people. Use synthetic data only &mdash; fake names, fake numbers, fake emails. Do not use your own or your family's real data, because your screenshots go into a public portfolio.</li>
+            <li><strong>Forbidden:</strong> Exposing your instance to the internet (no ngrok, no port forwarding, no public cloud deploy) while it is in its vulnerable state.</li>
+        </ul>
+        <p><strong>Safety rails for the offensive track:</strong> denial-of-service testing is limited to demonstrating <em>the conditions that make DoS possible</em> (for example, an unbounded query or a missing rate limit) plus small, controlled proof requests. Do not run sustained volumetric attacks, even against yourself &mdash; a resource-exhaustion screenshot is worth the same credit and will not cook your laptop.</p>
+        <p style="margin-bottom: 0;">If at any point you are unsure whether something is in scope, the answer is: <strong>ask before you run it.</strong> "I wasn't sure so I tried it" is the exact sentence that ends security careers.</p>
+    </section>
+    <section style="background: #f5f3ff; border-left: 7px solid #6d28d9; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="situation-heading">
+        <h2 id="situation-heading" style="color: #4c1d95; margin-top: 0;"><span aria-hidden="true">📨</span> The Situation</h2>
+        <div style="background: #ffffff; border-radius: 10px; padding: 1rem 1.2rem; border: 1px solid #ddd6fe;">
+            <p style="margin-top: 0; font-size: 0.82rem; color: #6d28d9;">Internal Memo &mdash; Confidential</p>
+            <p><strong>From:</strong> Office of the CISO<br /><strong>To:</strong> Incoming Security Engineer<br /><strong>Re:</strong> Birthday Memory &mdash; pre-launch security posture</p>
+            <p>Engineering built <strong>Birthday Memory</strong> to solve a small internal problem: remembering teammates' birthdays. It is a React front end, an Express API, and a PostgreSQL database. It works. People like it. Leadership now wants to roll it out company-wide and eventually to customers.</p>
+            <p>Here is my problem. The team built the entire thing on <code>localhost</code>, where everything is trusted by default, and they never went back. There is no login screen. There is no API key. There is no authorization check of any kind. Every endpoint that reads, writes, modifies, or <em>deletes</em> personal records is reachable by anyone who can send an HTTP request.</p>
+            <p>The database credentials appear to be committed to the repository. The container configuration was written for convenience, not for safety. I do not believe anyone has ever run a vulnerability scan against this stack.</p>
+            <p style="margin-bottom: 0;">I need to know two things before this ships: <strong>can this be broken into, and what does it cost us if it is?</strong> The board meets at the end of the term. Your report goes in front of them. Be thorough, be accurate, and be ready to be questioned.</p>
+        </div>
+        <p style="margin-bottom: 0; margin-top: 1rem;"><strong>The data at risk is not trivial.</strong> Full name plus date of birth plus phone plus email is a complete identity-theft starter kit and a social-engineering pretext generator. Treat this as the PII breach it would be, not as "just birthdays."</p>
+    </section>
+    <section style="background: #fef2f2; border-left: 7px solid #b91c1c; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="known-heading">
+        <h2 id="known-heading" style="color: #7f1d1d; margin-top: 0;"><span aria-hidden="true">🔎</span> What We Already Suspect (Your Starting Scope)</h2>
+        <p>This is a <strong>scope statement, not an answer key.</strong> It tells you which surfaces are in bounds. It does not tell you what is actually exploitable, how severe it is, or whether the item is even a real finding. Determining that is the assignment.</p>
+        <h3 style="color: #991b1b;">Three domains are in scope</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; margin-bottom: 0.9rem;">
+            <div style="flex: 1 1 260px; background: #ffffff; border-radius: 10px; padding: 0.9rem 1.05rem; border: 2px solid #fecaca;">
+                <p style="margin: 0 0 0.4rem 0; color: #991b1b;"><span aria-hidden="true">🔌</span> Domain 1 &mdash; The API</p>
+                <p style="margin: 0; font-size: 0.95rem;">Express app in <code>server/src/</code>. Look at <code>index.js</code> (middleware, CORS, error handling, health endpoint) and <code>routes.js</code> (every CRUD route and what does &mdash; or does not &mdash; gate it).</p>
+            </div>
+            <div style="flex: 1 1 260px; background: #ffffff; border-radius: 10px; padding: 0.9rem 1.05rem; border: 2px solid #fecaca;">
+                <p style="margin: 0 0 0.4rem 0; color: #991b1b;"><span aria-hidden="true">🗄️</span> Domain 2 &mdash; The Database</p>
+                <p style="margin: 0; font-size: 0.95rem;">PostgreSQL connection and schema in <code>server/src/db.js</code>. Consider credentials, connection defaults, transport security, privilege level, and what is stored in plaintext.</p>
+            </div>
+            <div style="flex: 1 1 260px; background: #ffffff; border-radius: 10px; padding: 0.9rem 1.05rem; border: 2px solid #fecaca;">
+                <p style="margin: 0 0 0.4rem 0; color: #991b1b;"><span aria-hidden="true">🐳</span> Domain 3 &mdash; The Container</p>
+                <p style="margin: 0; font-size: 0.95rem;"><code>docker-compose.yml</code>, the image it pulls, what it publishes to the host, how secrets reach the container, and what the runtime is permitted to do.</p>
+            </div>
+        </div>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fecaca;">
+            <summary style="cursor: pointer; color: #991b1b;">Open for the specific questions we want answered about the API</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>What identity does the API require before it will read, create, modify, or delete a personal record? What happens if a request supplies no identity at all?</li>
+                <li>Which origins is a browser permitted to make credentialed calls from? How was that decided, and by what line of code?</li>
+                <li>How many records can a single unauthenticated request retrieve? Is there any ceiling, page size, or throttle?</li>
+                <li>What response headers does the API set to protect a browser client? Compare against a baseline like Helmet's defaults.</li>
+                <li>When something fails internally, how much does the response tell the caller about the internals?</li>
+                <li>Is there any record of <em>who</em> performed a destructive action, and when? If a thousand records vanished tonight, what would the investigation have to work with?</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fecaca;">
+            <summary style="cursor: pointer; color: #991b1b;">Open for the specific questions we want answered about the database</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>Where do the database credentials come from when no environment file is present? Trace it in code and state the actual values.</li>
+                <li>Are those same values discoverable by someone who only has read access to the public repository?</li>
+                <li>Is the database reachable from anywhere other than the application container? From the host? From another machine on the same Wi-Fi?</li>
+                <li>When TLS is enabled for the database connection, is the server's certificate actually verified? What attack does the current setting permit?</li>
+                <li>What privilege level does the application's database role hold? Does the app need everything that role can do?</li>
+                <li>Is the PII encrypted at rest, in transit, or in backups? Can you read it straight off the volume?</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fecaca;">
+            <summary style="cursor: pointer; color: #991b1b;">Open for the specific questions we want answered about the container</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>Which user does the process inside the container run as? What does that mean if the process is compromised?</li>
+                <li>Is the base image pinned to something immutable, or to a tag that can change underneath you? What supply-chain risk does that create?</li>
+                <li>How do secrets get into the container, and who can read them back out afterward with standard Docker commands?</li>
+                <li>Which ports are published to the host interface, and does every one of them need to be?</li>
+                <li>What Linux capabilities, filesystem permissions, and resource limits does the container have? What is the blast radius of a container escape?</li>
+                <li>How many known CVEs are in the image as pulled today? Prove it with a scanner rather than asserting it.</li>
+            </ul>
+        </details>
+        <div style="background: #1e293b; color: #f1f5f9; border-radius: 10px; padding: 1rem 1.2rem; margin-top: 1rem;">
+            <p style="margin: 0 0 0.5rem 0; color: #fda4af;"><span aria-hidden="true">🧠</span> A deliberate trap &mdash; read carefully</p>
+            <p style="margin: 0;">At least one "obvious" vulnerability class that you will be tempted to report is <strong>probably not present in this codebase</strong>, because the developers happened to do that one thing correctly. If you report it anyway without testing it, you will have submitted a false positive to a board of directors. In this assignment, <strong>an unverified finding costs you more points than a missed one.</strong> Test first. Report what you proved.</p>
+        </div>
+    </section>
+    <section style="background: #ecfdf5; border-left: 7px solid #047857; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="objectives-heading">
+        <h2 id="objectives-heading" style="color: #065f46; margin-top: 0;"><span aria-hidden="true">🎯</span> Learning Objectives</h2>
+        <p>By completing this assignment, you will be able to:</p>
+        <ul style="padding-left: 1.4rem;">
+            <li>Conduct a scoped security assessment of a multi-tier application using a recognized methodology (OWASP WSTG, PTES, or NIST SP 800-115).</li>
+            <li>Distinguish a <em>proven</em> vulnerability from a <em>suspected</em> one, and document the difference honestly.</li>
+            <li>Score findings with CVSS v3.1 and defend each metric choice in the vector string.</li>
+            <li>Translate a technical defect into business risk that a non-technical executive can act on.</li>
+            <li>Apply defense-in-depth across three distinct layers &mdash; application, data, and container runtime &mdash; rather than patching a single symptom.</li>
+            <li>Produce written work that survives hostile review, and defend it verbally under questioning.</li>
+        </ul>
+        <p style="margin-bottom: 0;">Track-specific objectives are listed inside each track below.</p>
+    </section>
+    <section style="background: #eff6ff; border-left: 7px solid #1d4ed8; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="fork-heading">
+        <h2 id="fork-heading" style="color: #1e3a8a; margin-top: 0;"><span aria-hidden="true">🍴</span> Step 0 &mdash; Fork It and Make It Yours (Required for Both Tracks)</h2>
+        <p>Everyone does this first, regardless of track. Your graded artifact lives in <strong>your</strong> repository, under <strong>your</strong> GitHub account, so it becomes something you can show an employer.</p>
+        <h3 style="color: #1e40af;">1. Fork on GitHub</h3>
+        <p>Go to the project and use the <strong>Fork</strong> button:</p>
+        <p><a style="color: #1e3a8a;" href="https://github.com/hvaandres/cyber-uvu-student-projects/tree/main/cybr-4550/threat_actors/birthday_memory" target="_blank" rel="noopener">Birthday Memory &mdash; CYBR 4550 project source<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></p>
+        <h3 style="color: #1e40af;">2. Clone your fork and stand the app up</h3>
+        <pre style="background: #0f172a; color: #e2e8f0; padding: 0.95rem 1.05rem; border-radius: 9px; overflow-x: auto;"><code>git clone https://github.com/&lt;your-username&gt;/cyber-uvu-student-projects.git
+cd cyber-uvu-student-projects/cybr-4550/threat_actors/birthday_memory
+
+npm run install:all
+cp server/.env.example server/.env
+npm run db:up
+npm --prefix server run seed    # synthetic data only
+npm run dev</code></pre>
+        <p>Confirm the app works before you attack or repair it. You cannot assess what you cannot run.</p>
+        <h3 style="color: #1e40af;">3. Create your working branch</h3>
+        <pre style="background: #0f172a; color: #e2e8f0; padding: 0.95rem 1.05rem; border-radius: 9px; overflow-x: auto;"><code># Red Team
+git checkout -b security-assessment-redteam
+
+# Application Security
+git checkout -b security-hardening-appsec</code></pre>
+        <h3 style="color: #1e40af;">4. Capture your "before" state</h3>
+        <p>Before you change anything, record the baseline: the running app, the current <code>docker compose ps</code> output, and the unmodified configuration. Without a credible "before," your "after" proves nothing. Commit this baseline so its timestamp is in Git history.</p>
+        <div style="background: #dbeafe; border-radius: 9px; padding: 0.9rem 1.1rem; margin-top: 1rem; border: 2px solid #1d4ed8;">
+            <p style="margin: 0;"><strong><span aria-hidden="true">💼</span> Portfolio requirement:</strong> your fork must end the term with a professional <code>README.md</code> at the project root describing what you did, why, and what you found or fixed. Write it for a hiring manager who has three minutes and no context. This is graded.</p>
+        </div>
+        <div style="background: #fee2e2; border-radius: 9px; padding: 0.9rem 1.1rem; margin-top: 0.75rem; border: 2px solid #b91c1c;">
+            <p style="margin: 0;"><strong><span aria-hidden="true">🔐</span> Do not leak your own secrets:</strong> your fork is public. Never commit a real <code>.env</code>, a real credential, a private key, or a screenshot containing one. Redact tokens in every image. Ironically, the fastest way to fail a security assignment is to introduce a new exposure while documenting an old one.</p>
+        </div>
+    </section>
+    <section style="background: #fdf4ff; border-left: 7px solid #a21caf; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="choose-heading">
+        <h2 id="choose-heading" style="color: #701a75; margin-top: 0;"><span aria-hidden="true">🧭</span> Choose Your Track</h2>
+        <p>Pick <strong>one</strong>. Both are worth the same number of points and both require the same standard of evidence. Choose based on the career you are building toward, not on which looks easier &mdash; neither is.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+            <div style="flex: 1 1 330px; background: #ffffff; border-radius: 12px; padding: 1.1rem 1.25rem; border: 3px solid #b91c1c;">
+                <p style="margin: 0 0 0.5rem 0;"><span style="background: #b91c1c; color: #ffffff; font-size: 0.78rem; padding: 0.25rem 0.65rem; border-radius: 999px;">TRACK A</span></p>
+                <h3 style="color: #7f1d1d; margin: 0.2rem 0 0.5rem 0;"><span aria-hidden="true">⚔️</span> Red Team &mdash; Break It and Prove It</h3>
+                <p style="margin: 0 0 0.6rem 0;"><strong>Your mission:</strong> attack your own fork, determine what is genuinely exploitable, and produce a penetration test report with reproducible evidence for every claim.</p>
+                <p style="margin: 0 0 0.4rem 0; color: #7f1d1d;">Choose this if you want to be a:</p>
+                <p style="margin: 0 0 0.7rem 0;">Penetration tester &middot; Red teamer &middot; Offensive security engineer &middot; Bug bounty hunter &middot; Threat researcher</p>
+                <p style="margin: 0; font-size: 0.95rem; color: #7f1d1d;"><strong>Hardest part:</strong> resisting the urge to report things you did not actually prove.</p>
+            </div>
+            <div style="flex: 1 1 330px; background: #ffffff; border-radius: 12px; padding: 1.1rem 1.25rem; border: 3px solid #1d4ed8;">
+                <p style="margin: 0 0 0.5rem 0;"><span style="background: #1d4ed8; color: #ffffff; font-size: 0.78rem; padding: 0.25rem 0.65rem; border-radius: 999px;">TRACK B</span></p>
+                <h3 style="color: #1e3a8a; margin: 0.2rem 0 0.5rem 0;"><span aria-hidden="true">🛡️</span> Application Security &mdash; Fix It and Prove It</h3>
+                <p style="margin: 0 0 0.6rem 0;"><strong>Your mission:</strong> threat model the system, then actually remediate the API, the database, and the container in code &mdash; with verification evidence that each fix works.</p>
+                <p style="margin: 0 0 0.4rem 0; color: #1e3a8a;">Choose this if you want to be a:</p>
+                <p style="margin: 0 0 0.7rem 0;">AppSec engineer &middot; Product security engineer &middot; DevSecOps engineer &middot; Cloud security engineer &middot; Security architect</p>
+                <p style="margin: 0; font-size: 0.95rem; color: #1e3a8a;"><strong>Hardest part:</strong> proving a fix actually works instead of just asserting that it does.</p>
+            </div>
+        </div>
+    </section>
+    <section style="background: #fef2f2; border-left: 7px solid #b91c1c; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="tracka-heading">
+        <h2 id="tracka-heading" style="color: #7f1d1d; margin-top: 0;"><span style="background: #b91c1c; color: #ffffff; font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 999px; vertical-align: middle;">TRACK A</span> <span aria-hidden="true">⚔️</span> Red Team &mdash; Full Requirements</h2>
+        <h3 style="color: #991b1b;">A1. Pick a methodology and follow it</h3>
+        <p>Ad hoc poking is not an assessment. Select one framework, state it in your report, and structure your testing around it:</p>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>OWASP Web Security Testing Guide (WSTG)</strong> &mdash; recommended; maps cleanly to a web API.</li>
+            <li><strong>PTES</strong> &mdash; if you want the full engagement lifecycle framing.</li>
+            <li><strong>NIST SP 800-115</strong> &mdash; if you want the formal technical-assessment structure.</li>
+        </ul>
+        <h3 style="color: #991b1b;">A2. Required coverage</h3>
+        <p>Your testing must cover all three in-scope domains and explicitly address every category below. For each one you must state a verdict: <strong>Confirmed Vulnerable</strong>, <strong>Not Vulnerable (tested)</strong>, or <strong>Not Tested (with justification)</strong>. Silence on a category is treated as incomplete coverage.</p>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fecaca;">
+            <summary style="cursor: pointer; color: #991b1b;">Required category list (OWASP Top 10 2021 alignment)</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li><strong>A01 Broken Access Control</strong> &mdash; can an unauthenticated party read, create, alter, or destroy records? Demonstrate each verb separately.</li>
+                <li><strong>A02 Cryptographic Failures</strong> &mdash; PII at rest, PII in transit, certificate validation behavior.</li>
+                <li><strong>A03 Injection</strong> &mdash; test it properly, then report the truth (see the trap warning above).</li>
+                <li><strong>A04 Insecure Design</strong> &mdash; what was never designed in at all, as opposed to implemented badly?</li>
+                <li><strong>A05 Security Misconfiguration</strong> &mdash; CORS policy, security headers, default credentials, error verbosity, exposed services.</li>
+                <li><strong>A06 Vulnerable and Outdated Components</strong> &mdash; dependency and image CVEs, with scanner output.</li>
+                <li><strong>A07 Identification and Authentication Failures</strong> &mdash; characterize the total absence of an authentication layer as a finding in its own right.</li>
+                <li><strong>A08 Software and Data Integrity Failures</strong> &mdash; image tag mutability, lockfile integrity, absence of an SBOM.</li>
+                <li><strong>A09 Logging and Monitoring Failures</strong> &mdash; destroy a record, then demonstrate what forensic trail exists. This is one of the strongest board-level findings available to you; do not skip it.</li>
+                <li><strong>A10 SSRF</strong> &mdash; assess and report, even if the verdict is "not applicable, here is why."</li>
+                <li><strong>Container-specific</strong> &mdash; runtime user, capabilities, secret retrieval via standard Docker commands, host port exposure, image CVE count, data readable directly off the volume.</li>
+                <li><strong>Availability</strong> &mdash; identify unbounded operations and missing throttles. Demonstrate the <em>condition</em>, not a sustained flood.</li>
+            </ul>
+        </details>
+        <h3 style="color: #991b1b;">A3. Evidence standard &mdash; this is where grades are won and lost</h3>
+        <p>Every finding requires <strong>all six</strong> of the following. A finding missing any element receives partial credit at best:</p>
+        <ol style="padding-left: 1.4rem;">
+            <li><strong>Reproduction steps</strong> &mdash; numbered, deterministic, and complete enough that the instructor can reproduce it on a clean clone without asking you anything.</li>
+            <li><strong>Raw evidence</strong> &mdash; the actual request and the actual response. Full <code>curl -i</code> output, Burp/ZAP captures, or terminal transcripts. Not a paraphrase.</li>
+            <li><strong>Visual proof</strong> &mdash; a screenshot with a visible timestamp and, where relevant, the tool's own output pane. Redact anything sensitive.</li>
+            <li><strong>CVSS v3.1 score with the full vector string</strong> &mdash; e.g. <code>AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N</code> &mdash; plus one sentence justifying each metric you chose. Expect to be asked why you picked <code>PR:N</code> over <code>PR:L</code>.</li>
+            <li><strong>Business impact</strong> &mdash; what it costs the organization in plain English. Regulatory exposure, notification obligations, reputational damage, operational disruption.</li>
+            <li><strong>Remediation recommendation</strong> &mdash; specific and actionable. "Add authentication" is not a recommendation. Name the mechanism, the layer it belongs in, and the trade-off it introduces.</li>
+        </ol>
+        <div style="background: #7f1d1d; color: #fef2f2; border-radius: 9px; padding: 0.9rem 1.15rem; margin: 0.9rem 0;">
+            <p style="margin: 0;"><strong>Negative results are graded.</strong> A professional report documents what you tested and found secure, not only what broke. It is how the reader knows the scope was actually covered. Include a "Tested &mdash; Not Vulnerable" section, and expect it to be read closely.</p>
+        </div>
+        <h3 style="color: #991b1b;">A4. Suggested tooling</h3>
+        <p>You are not required to use all of these, but you must justify your toolchain in the report.</p>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>Interception and fuzzing:</strong> Burp Suite Community, OWASP ZAP, <code>curl</code>, <code>httpie</code>, Postman</li>
+            <li><strong>Surface discovery:</strong> <code>nmap</code> (localhost only), <code>ffuf</code> or <code>gobuster</code> for endpoint enumeration</li>
+            <li><strong>Dependency and image scanning:</strong> <code>npm audit</code>, Trivy, Grype, Docker Scout, Syft for SBOM generation</li>
+            <li><strong>Container benchmarking:</strong> Docker Bench for Security, CIS Docker Benchmark</li>
+            <li><strong>Static analysis:</strong> Semgrep, <code>njsscan</code>, GitHub CodeQL</li>
+            <li><strong>Secret discovery:</strong> <code>gitleaks</code>, TruffleHog &mdash; run these against your fork's history, not just its current state</li>
+            <li><strong>Database:</strong> <code>psql</code>, or any client, to test reachability and privilege</li>
+        </ul>
+        <h3 style="color: #991b1b;">A5. Deliverables</h3>
+        <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+            <li>The <strong>board report</strong> (format specified in the shared section below).</li>
+            <li>A <code>security/</code> directory in your fork containing your evidence files, scanner output, and any proof-of-concept scripts you wrote.</li>
+            <li>A findings register as a structured file (<code>findings.md</code> or CSV) with ID, title, severity, CVSS vector, affected component, and status.</li>
+            <li>Your portfolio <code>README.md</code>.</li>
+        </ul>
+    </section>
+    <section style="background: #eff6ff; border-left: 7px solid #1d4ed8; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="trackb-heading">
+        <h2 id="trackb-heading" style="color: #1e3a8a; margin-top: 0;"><span style="background: #1d4ed8; color: #ffffff; font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 999px; vertical-align: middle;">TRACK B</span> <span aria-hidden="true">🛡️</span> Application Security &mdash; Full Requirements</h2>
+        <h3 style="color: #1e40af;">B1. Threat model before you touch code</h3>
+        <p>Engineers who patch before they model fix symptoms. Produce, in this order:</p>
+        <ul style="padding-left: 1.4rem;">
+            <li>A <strong>data flow diagram</strong> showing browser, API, and database, with trust boundaries drawn explicitly. Mermaid, draw.io, or clean hand-drawn-and-scanned are all acceptable.</li>
+            <li>A <strong>STRIDE analysis</strong> (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) across each boundary you drew.</li>
+            <li>An <strong>asset inventory</strong>: what data exists, how sensitive it is, and what regulation might attach to it.</li>
+            <li>A <strong>prioritized remediation roadmap</strong> ranking every issue by risk, with your ranking criteria stated. You must justify why the top item outranks the second.</li>
+        </ul>
+        <h3 style="color: #1e40af;">B2. Remediate all three domains in code</h3>
+        <p>Your fix must be real, committed, and runnable. A document describing what you would have done does not satisfy this.</p>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #bfdbfe;">
+            <summary style="cursor: pointer; color: #1e40af;">Domain 1 &mdash; API hardening requirements</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li><strong>Authentication.</strong> Implement a real mechanism (session-based, JWT with sane expiry and rotation, or API keys with proper storage). Document why you chose it over the alternatives &mdash; you will be asked.</li>
+                <li><strong>Authorization.</strong> Authentication answers "who are you." Authorization answers "may you do this to this record." Implement both; explain the difference in your report.</li>
+                <li><strong>CORS.</strong> Replace the permissive policy with an explicit origin allowlist, and explain the interaction between CORS and credentialed requests.</li>
+                <li><strong>Security headers.</strong> Apply a hardened baseline. State what each header you enabled actually defends against &mdash; do not just import a library and move on.</li>
+                <li><strong>Rate limiting and throttling</strong> on every mutating route and on bulk reads.</li>
+                <li><strong>Pagination and result caps</strong> so no single request can drain the table.</li>
+                <li><strong>Input validation hardening</strong> beyond the current checks, plus an explicit output-encoding position for stored values.</li>
+                <li><strong>Error handling.</strong> Generic responses to clients, detailed logs server-side. Eliminate internal detail leakage.</li>
+                <li><strong>Audit logging.</strong> Every create, update, and delete must produce a durable record of actor, action, target, and timestamp. Show a sample log line for a deletion.</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #bfdbfe;">
+            <summary style="cursor: pointer; color: #1e40af;">Domain 2 &mdash; Database hardening requirements</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li><strong>Eliminate credential exposure.</strong> Remove hardcoded and committed credentials everywhere they appear, including code defaults. Then check the Git history &mdash; deleting a secret from the working tree does not remove it from the repository.</li>
+                <li><strong>Secrets management.</strong> Move to a defensible mechanism (Docker secrets, environment injection from a vault, or an equivalent). Document the rotation story: what happens the day a credential leaks?</li>
+                <li><strong>Least privilege.</strong> Create a dedicated application role with the minimum grants required. Demonstrate that the app still works and that the role cannot do more than it needs.</li>
+                <li><strong>Transport security.</strong> Enable TLS <em>with real certificate verification</em>. Explain the specific attack that the previous setting allowed.</li>
+                <li><strong>Network exposure.</strong> Ensure the database is reachable only by the services that need it.</li>
+                <li><strong>Protection of PII at rest.</strong> Choose an approach &mdash; column-level encryption, full-disk/volume encryption, tokenization &mdash; implement or concretely specify it, and honestly state its limits.</li>
+                <li><strong>Backup and recovery</strong> posture, including whether backups inherit the same protections as the live data.</li>
+                <li><strong>Optional distinction:</strong> row-level security policies.</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #bfdbfe;">
+            <summary style="cursor: pointer; color: #1e40af;">Domain 3 &mdash; Container hardening requirements</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li><strong>Write a hardened <code>Dockerfile</code></strong> for the application: multi-stage build, minimal base image, a pinned immutable base reference, a non-root <code>USER</code>, no secrets baked into any layer, and a <code>HEALTHCHECK</code>.</li>
+                <li><strong>Add a <code>.dockerignore</code></strong> and explain which sensitive paths it keeps out of the build context and why that matters.</li>
+                <li><strong>Harden the Compose configuration:</strong> stop publishing internal services to the host, apply <code>read_only</code> where viable, drop unnecessary capabilities, set <code>no-new-privileges</code>, and impose CPU and memory limits.</li>
+                <li><strong>Scan and prove it.</strong> Produce before-and-after vulnerability scan output for your images and quantify the reduction. A number beats an adjective.</li>
+                <li><strong>Generate an SBOM</strong> and explain to the board, in one paragraph, why anyone should care.</li>
+                <li><strong>Distinction:</strong> a CI pipeline (GitHub Actions) that runs dependency audit, secret scanning, and image scanning on every push, and fails the build on high-severity findings.</li>
+            </ul>
+        </details>
+        <h3 style="color: #1e40af;">B3. Verification standard &mdash; this is where grades are won and lost</h3>
+        <p>For <strong>every</strong> fix, supply paired before-and-after evidence. Asserting that something is fixed earns nothing.</p>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>Before:</strong> the request that succeeded when it should not have, with its response.</li>
+            <li><strong>After:</strong> the same request now rejected, with the correct status code &mdash; and a matching authorized request that still succeeds, proving you secured the app instead of breaking it.</li>
+            <li><strong>Automated tests</strong> that encode the security property, so a future developer cannot silently regress it.</li>
+            <li><strong>Scanner deltas</strong> with counts before and after.</li>
+            <li><strong>A residual risk statement.</strong> Nothing is ever fully secure. State what you did not fix, why, and what compensating control covers it. Boards trust engineers who name their remaining risk; they distrust engineers who claim total victory.</li>
+        </ul>
+        <h3 style="color: #1e40af;">B4. Suggested tooling and references</h3>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>Standards:</strong> OWASP ASVS (declare your target level and justify it), OWASP Cheat Sheet Series, CIS Benchmarks</li>
+            <li><strong>Libraries:</strong> Helmet, <code>express-rate-limit</code>, <code>zod</code> or <code>joi</code>, <code>argon2</code> or <code>bcrypt</code>, <code>pino</code> for structured logging</li>
+            <li><strong>Scanning:</strong> <code>npm audit</code>, Snyk, Trivy, Grype, Semgrep, <code>gitleaks</code>, Syft</li>
+            <li><strong>Verification:</strong> Vitest or Jest with Supertest for security regression tests</li>
+        </ul>
+        <h3 style="color: #1e40af;">B5. Deliverables</h3>
+        <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+            <li>The <strong>board report</strong> (format specified in the shared section below).</li>
+            <li>A working, hardened application in your fork &mdash; it must still run.</li>
+            <li>Your threat model artifacts, committed to the repository.</li>
+            <li>Security regression tests plus instructions to run them.</li>
+            <li>A <code>SECURITY.md</code> documenting the resulting security posture and the vulnerability disclosure process.</li>
+            <li>Your portfolio <code>README.md</code>.</li>
+        </ul>
+    </section>
+    <section style="background: #f0fdfa; border-left: 7px solid #0f766e; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="report-heading">
+        <h2 id="report-heading" style="color: #115e59; margin-top: 0;"><span aria-hidden="true">📄</span> The Board Report (Both Tracks)</h2>
+        <p>Your report is the primary deliverable. It goes to a <strong>board of directors</strong> &mdash; a mixed audience of executives who control budget and technical leaders who will check your work. Write for both.</p>
+        <h3 style="color: #115e59;">Required structure</h3>
+        <ol style="padding-left: 1.4rem;">
+            <li><strong>Cover page</strong> &mdash; title, your name, date, classification marking, document version.</li>
+            <li><strong>Executive summary (1 page, hard limit)</strong> &mdash; no jargon, no CVEs, no code. A board member must be able to read only this page and know what the risk is, what it could cost, and what decision you need from them. Write this <em>last</em>.</li>
+            <li><strong>Scope and methodology</strong> &mdash; what was in scope, what was out, which framework you followed, which tools you used, and the limitations of your assessment. Stating your limitations increases your credibility; hiding them destroys it when someone finds them.</li>
+            <li><strong>Findings or remediations</strong> &mdash; the technical core, ordered by risk, each meeting the evidence or verification standard for your track.</li>
+            <li><strong>Risk analysis</strong> &mdash; likelihood, impact, and a risk matrix. Connect technical severity to business consequence.</li>
+            <li><strong>Regulatory and compliance considerations</strong> &mdash; identify which frameworks plausibly apply to this data (consider GDPR, CCPA/CPRA, state breach-notification law, PCI DSS if payments were ever added, and any sector-specific rules). Name them accurately; do not invent applicability. Getting this wrong in front of a board is memorable for the wrong reasons.</li>
+            <li><strong>Recommendations and roadmap</strong> &mdash; prioritized, with rough effort estimates and a proposed sequence. Distinguish "stop the bleeding this week" from "architectural work next quarter."</li>
+            <li><strong>Conclusion</strong> &mdash; your professional opinion. Should this ship? Take a position and own it.</li>
+            <li><strong>Appendices</strong> &mdash; raw tool output, full transcripts, extended screenshots, references.</li>
+        </ol>
+        <h3 style="color: #115e59;">Format requirements</h3>
+        <ul style="padding-left: 1.4rem;">
+            <li><strong>PDF</strong>, 12&ndash;25 pages excluding appendices.</li>
+            <li>Page numbers, consistent headings, and a table of contents.</li>
+            <li>Every figure and screenshot captioned and referenced from the body text.</li>
+            <li>Citations for any standard, CVE, or external source you rely on.</li>
+            <li>Proofread. Typos in a document that claims rigor undercut the claim.</li>
+            <li>The PDF must also be committed to your fork.</li>
+        </ul>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; border: 1px solid #99f6e4;">
+            <summary style="cursor: pointer; color: #115e59;">What separates a top report from an average one</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>It quantifies. "Approximately 4,200 PII records retrievable in a single unauthenticated request" lands; "sensitive data is exposed" does not.</li>
+                <li>It admits uncertainty precisely, rather than hiding it behind confident phrasing.</li>
+                <li>Its severity ratings are defensible line by line, not vibes rendered as colors.</li>
+                <li>It anticipates the obvious objection and answers it before it is raised.</li>
+                <li>It reads like it was written by one person with a point of view, not assembled from tool output.</li>
+            </ul>
+        </details>
+    </section>
+    <section style="background: #fff7ed; border-left: 7px solid #c2410c; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="defense-heading">
+        <h2 id="defense-heading" style="color: #9a3412; margin-top: 0;"><span aria-hidden="true">🎤</span> Oral Defense &mdash; Expect to Be Questioned</h2>
+        <p>Your report will be reviewed in detail, and you will sit for a <strong>10&ndash;15 minute oral defense</strong>. The purpose is simple: confirm that you understand what you submitted. You may bring your report and your repository. Please take a look at the sample questions and record and answer all of them in a teams video, and share the link. Please create this video under the teams channel called Homework inside of the group "<span>CYBR-4550-X01 | 2026 Fall - Full Term</span>"</p>
+        <p style="color: #9a3412;">If you cannot explain a finding or a fix in your own words, it will not count toward your grade, regardless of how well it is written up.</p>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fed7aa;">
+            <summary style="cursor: pointer; color: #9a3412;">Sample questions &mdash; Red Team track</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>Walk me through your highest-severity finding without looking at your notes.</li>
+                <li>You scored this Critical. Justify each metric in your CVSS vector. Why <code>S:U</code> and not <code>S:C</code>?</li>
+                <li>You reported this as exploitable. Show me, right now, on your machine.</li>
+                <li>Which category did you test and find secure? Why is the code correct there?</li>
+                <li>An engineer claims your top finding is not real because the app only runs internally. Respond.</li>
+                <li>If you had one week and one engineer, which single finding would you fix first, and what does that leave exposed?</li>
+                <li>What did you fail to test, and how might that omission have changed your conclusions?</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; margin-bottom: 0.6rem; border: 1px solid #fed7aa;">
+            <summary style="cursor: pointer; color: #9a3412;">Sample questions &mdash; Application Security track</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>You chose this authentication mechanism. What did you reject, and what does your choice cost you?</li>
+                <li>Explain the difference between what you implemented for authentication and what you implemented for authorization. Show me both in the code.</li>
+                <li>Your token expires in that window. Defend that number.</li>
+                <li>You removed the credential from the file. Is it gone from the repository? Prove it.</li>
+                <li>Your container runs as a non-root user. What specific attack does that stop, and what does it not stop?</li>
+                <li>Show me the test that fails if a future developer removes your authorization check.</li>
+                <li>What is your largest remaining risk after all of your fixes, and why did you accept it?</li>
+            </ul>
+        </details>
+        <details style="background: #ffffff; border-radius: 9px; padding: 0.7rem 1.1rem; border: 1px solid #fed7aa;">
+            <summary style="cursor: pointer; color: #9a3412;">Questions either track may receive</summary>
+            <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+                <li>Explain this to me as though I am the CFO and I do not know what an API is.</li>
+                <li>What is the realistic worst-case scenario if we ship as-is, and how likely is it?</li>
+                <li>Which regulations plausibly apply to this data, and what are our notification obligations after a breach?</li>
+                <li>You used an AI assistant somewhere in this work. Where, and how did you verify its output?</li>
+                <li>What surprised you most during this assessment?</li>
+            </ul>
+        </details>
+    </section>
+    <section style="background: #ecfeff; border-left: 7px solid #0e7490; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="rubric-heading">
+        <h2 id="rubric-heading" style="color: #155e75; margin-top: 0;"><span aria-hidden="true">📊</span> Grading Rubric (100 points)</h2>
+        <table style="width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 9px; overflow: hidden;">
+            <caption style="text-align: left; color: #155e75; padding-bottom: 0.55rem;">Point distribution, what is assessed in each area, and the most common way students lose those points</caption>
+            <thead>
+                <tr style="background: #a5f3fc;">
+                    <th style="text-align: left; padding: 0.65rem; color: #164e63;" scope="col">Component</th>
+                    <th style="text-align: left; padding: 0.65rem; color: #164e63;" scope="col">Pts</th>
+                    <th style="text-align: left; padding: 0.65rem; color: #164e63;" scope="col">What earns full credit</th>
+                    <th style="text-align: left; padding: 0.65rem; color: #164e63;" scope="col">Most common point loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #cffafe;">
+                    <th style="text-align: left; padding: 0.65rem;" scope="row">Technical depth</th>
+                    <td style="padding: 0.65rem;">30</td>
+                    <td style="padding: 0.65rem;">All three domains covered at the required depth; work goes beyond the obvious surface issues.</td>
+                    <td style="padding: 0.65rem;">Only the API examined; database and container treated as afterthoughts.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #cffafe; background: #f0fdff;">
+                    <th style="text-align: left; padding: 0.65rem;" scope="row">Evidence / verification</th>
+                    <td style="padding: 0.65rem;">25</td>
+                    <td style="padding: 0.65rem;">Every claim backed by reproducible proof meeting the six-element standard (A) or paired before/after evidence (B).</td>
+                    <td style="padding: 0.65rem;">Assertions without artifacts; screenshots that do not show what the caption claims.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #cffafe;">
+                    <th style="text-align: left; padding: 0.65rem;" scope="row">Report quality</th>
+                    <td style="padding: 0.65rem;">20</td>
+                    <td style="padding: 0.65rem;">Board-ready structure, accurate risk ratings, genuine business translation, clean professional prose.</td>
+                    <td style="padding: 0.65rem;">An executive summary crammed with jargon; severity ratings that cannot be defended.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #cffafe; background: #f0fdff;">
+                    <th style="text-align: left; padding: 0.65rem;" scope="row">Oral defense</th>
+                    <td style="padding: 0.65rem;">15</td>
+                    <td style="padding: 0.65rem;">Fluent, unscripted command of your own work; handles pushback without bluffing.</td>
+                    <td style="padding: 0.65rem;">Reading from the report; unable to explain a submitted finding or fix.</td>
+                </tr>
+                <tr>
+                    <th style="text-align: left; padding: 0.65rem;" scope="row">Portfolio &amp; repo hygiene</th>
+                    <td style="padding: 0.65rem;">10</td>
+                    <td style="padding: 0.65rem;">Clean fork, meaningful commit history, strong README, nothing sensitive committed.</td>
+                    <td style="padding: 0.65rem;">One giant commit named "final"; a leaked <code>.env</code> or unredacted screenshot.</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3 style="color: #155e75;">Adjustments</h3>
+        <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+            <li><strong>Deduction &mdash; false positives:</strong> up to &minus;5 points per fabricated or unverified finding reported as confirmed. This is the single most damaging error in professional security work, and it is graded that way here.</li>
+            <li><strong>Deduction &mdash; scope violation:</strong> testing anything outside your own fork and machine results in a zero and referral under the academic integrity policy.</li>
+            <li><strong>Deduction &mdash; new exposure:</strong> committing a real secret or an unredacted credential to your public fork costs points even if the rest of the work is excellent.</li>
+            <li><strong>Bonus &mdash; up to +5:</strong> an exceptional contribution such as a working CI security pipeline, a genuinely novel finding, a polished custom proof-of-concept tool, or a remediation demonstrably stronger than the standard fix.</li>
+        </ul>
+    </section>
+    <section style="background: #f0fdf4; border-left: 7px solid #15803d; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="submit-heading">
+        <h2 id="submit-heading" style="color: #166534; margin-top: 0;"><span aria-hidden="true">📤</span> Submission Checklist</h2>
+        <p>Submit through this Canvas assignment. Work through the list below before you click submit &mdash; items are graded exactly as written.</p>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"></li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Link to your public fork</strong>, with your working branch pushed.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Board report as a PDF</strong>, uploaded to Canvas and committed to the fork.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Evidence bundle</strong> &mdash; the <code>security/</code> directory with tool output, transcripts, and screenshots.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Track A only:</strong> findings register (<code>findings.md</code> or CSV).</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Track B only:</strong> hardened code that still runs, threat model artifacts, security tests, and <code>SECURITY.md</code>.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Portfolio <code>README.md</code></strong> written for a hiring manager.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>AI usage disclosure</strong> (see the next section) included in the report.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; border-bottom: 1px solid #bbf7d0; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Secret sweep completed</strong> &mdash; no real credentials, keys, or unredacted screenshots anywhere in the fork or its history.</li>
+            <li style="padding: 0.4rem 0 0.4rem 1.9rem; position: relative;"><span style="position: absolute; left: 0; color: #15803d;" aria-hidden="true">☐</span> <strong>Oral defense scheduled</strong> through the sign-up sheet.</li>
+        </ul>
+        <p style="margin-bottom: 0;"><strong>Late work</strong> follows the syllabus policy. Oral defense slots are limited and are assigned first-come; a missed slot without prior arrangement forfeits those 15 points.</p>
+    </section>
+    <section style="background: #fdf4ff; border-left: 7px solid #a21caf; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="integrity-heading">
+        <h2 id="integrity-heading" style="color: #701a75; margin-top: 0;"><span aria-hidden="true">⚖️</span> Academic Integrity &amp; AI Use</h2>
+        <p><strong>AI assistants are permitted</strong> for this assignment. They are part of the modern security toolchain and pretending otherwise would be poor preparation. Three conditions apply:</p>
+        <ol style="padding-left: 1.4rem;">
+            <li><strong>Disclose it.</strong> Include a short appendix stating which tools you used, for what, and how you validated the output.</li>
+            <li><strong>Verify everything.</strong> AI-generated findings are hypotheses, not evidence. An AI-invented CVE or hallucinated CVSS score in a board report is a false positive and will be graded as one.</li>
+            <li><strong>Own it.</strong> The oral defense is the equalizer. If you cannot explain it, you did not learn it, and it does not count.</li>
+        </ol>
+        <p style="margin-bottom: 0;"><strong>Collaboration:</strong> discussing methodology, tools, and concepts with classmates is encouraged. Sharing report text, findings, evidence files, or code is not. Every submission must reflect your own testing on your own fork.</p>
+    </section>
+    <section style="background: #f8fafc; border-left: 7px solid #475569; border-radius: 12px; padding: 1.3rem 1.55rem; margin-bottom: 1.6rem;" aria-labelledby="resources-heading">
+        <h2 id="resources-heading" style="color: #1e293b; margin-top: 0;"><span aria-hidden="true">📚</span> Resources</h2>
+        <h3 style="color: #334155;">Project</h3>
+        <ul style="padding-left: 1.4rem;">
+            <li><a style="color: #1d4ed8;" href="https://github.com/hvaandres/cyber-uvu-student-projects/tree/main/cybr-4550/threat_actors/birthday_memory" target="_blank" rel="noopener">Birthday Memory source and README<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+        </ul>
+        <h3 style="color: #334155;">Methodology &amp; standards</h3>
+        <ul style="padding-left: 1.4rem;">
+            <li><a style="color: #1d4ed8;" href="https://owasp.org/www-project-web-security-testing-guide/" target="_blank" rel="noopener">OWASP Web Security Testing Guide<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://owasp.org/Top10/" target="_blank" rel="noopener">OWASP Top 10 (2021)<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://owasp.org/API-Security/editions/2023/en/0x00-header/" target="_blank" rel="noopener">OWASP API Security Top 10 (2023)<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://owasp.org/www-project-application-security-verification-standard/" target="_blank" rel="noopener">OWASP ASVS<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://cheatsheetseries.owasp.org/" target="_blank" rel="noopener">OWASP Cheat Sheet Series<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://csrc.nist.gov/pubs/sp/800/115/final" target="_blank" rel="noopener">NIST SP 800-115 &mdash; Technical Guide to Information Security Testing<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://www.first.org/cvss/v3.1/specification-document" target="_blank" rel="noopener">CVSS v3.1 specification<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://www.first.org/cvss/calculator/3.1" target="_blank" rel="noopener">CVSS v3.1 calculator<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+        </ul>
+        <h3 style="color: #334155;">Tooling</h3>
+        <ul style="padding-left: 1.4rem;">
+            <li><a style="color: #1d4ed8;" href="https://portswigger.net/burp/documentation" target="_blank" rel="noopener">Burp Suite documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://www.zaproxy.org/docs/" target="_blank" rel="noopener">OWASP ZAP documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://trivy.dev/latest/docs/" target="_blank" rel="noopener">Trivy documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://semgrep.dev/docs/" target="_blank" rel="noopener">Semgrep documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://github.com/gitleaks/gitleaks" target="_blank" rel="noopener">gitleaks &mdash; secret scanning<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+        </ul>
+        <h3 style="color: #334155;">Hardening references</h3>
+        <ul style="padding-left: 1.4rem; margin-bottom: 0;">
+            <li><a style="color: #1d4ed8;" href="https://docs.docker.com/engine/security/" target="_blank" rel="noopener">Docker security documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://docs.docker.com/build/building/best-practices/" target="_blank" rel="noopener">Dockerfile best practices<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://docs.docker.com/compose/how-tos/use-secrets/" target="_blank" rel="noopener">Docker Compose secrets<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://www.postgresql.org/docs/current/security.html" target="_blank" rel="noopener">PostgreSQL security documentation<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://helmetjs.github.io/" target="_blank" rel="noopener">Helmet &mdash; Express security headers<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+            <li><a style="color: #1d4ed8;" href="https://expressjs.com/en/advanced/best-practice-security.html" target="_blank" rel="noopener">Express production security best practices<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; white-space: nowrap;"> (opens in a new tab)</span></a></li>
+        </ul>
+    </section>
+    <footer style="background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 1.3rem 1.55rem;">
+        <p style="margin: 0 0 0.75rem 0; font-size: 1.02rem;"><strong style="color: #fbbf24;">A closing note.</strong> The vulnerabilities in this application are not exotic. They are the ordinary consequence of a team building on <code style="background: #1e293b; color: #e2e8f0; padding: 0.1rem 0.3rem; border-radius: 4px;">localhost</code>, where everything is trusted, and never revisiting that assumption before shipping. This is how the overwhelming majority of real breaches begin: not with a sophisticated adversary, but with a door nobody remembered to lock.</p>
+        <p style="margin: 0 0 0.75rem 0;">Whichever track you choose, the skill being assessed is the same one: the ability to look at working software and ask what happens when someone hostile uses it. That question does not have a tool. It has you.</p>
+        <p style="margin: 0; color: #94a3b8;">Questions? Post to the course discussion board or come to office hours. Start early &mdash; the report takes longer than the testing does, and the oral defense is much easier when you are not writing at 3 a.m. the night before.</p>
+    </footer>
+</div>
