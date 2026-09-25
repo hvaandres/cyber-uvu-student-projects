@@ -151,6 +151,37 @@ There is no CSS framework — all styling is hand-written in `client/src/styles/
 
 These steps are the **same on macOS, Windows and Linux** once Node and Postgres are installed.
 
+### Quick start
+
+Run these commands from the `birthday_memory` directory:
+
+```bash
+# Install all root, server, and client dependencies
+npm run install:all
+
+# Create the server environment file
+cp server/.env.example server/.env
+
+# Start Docker Desktop before running this command
+npm run db:up
+
+# Optional: insert sample birthdays
+npm --prefix server run seed
+
+# Start the API and frontend together
+npm run dev
+```
+
+Open **http://localhost:5173** in your browser. The API runs at **http://localhost:4000**.
+
+On Windows PowerShell, use this instead of the `cp` command:
+
+```powershell
+Copy-Item server\.env.example server\.env
+```
+
+Keep the terminal running while you use the application. Press `Ctrl+C` to stop the API and frontend.
+
 ### 1. Get the code and install dependencies
 
 ```bash
@@ -179,13 +210,33 @@ The defaults in that file already match the bundled Docker database, so you can 
 
 ### 3. Start PostgreSQL
 
+If you are using Docker on macOS or Windows, open **Docker Desktop** and wait until it reports that Docker is running. Verify the Docker engine before starting the database:
+
+```bash
+docker info
+```
+
+If you see an error such as:
+
+```text
+failed to connect to the docker API
+```
+
+Docker Desktop is not running yet. Start it, wait a few seconds, and run `docker info` again.
+
 **Option A — bundled Docker database (recommended).** No Postgres install needed, and the `thebirthdates` database is created for you:
 
 ```bash
 npm run db:up
 ```
 
-Make sure Docker Desktop is actually running first, or you'll get a socket connection error.
+Confirm that the database container is running:
+
+```bash
+docker compose ps
+```
+
+The service should be listed as `postgres`.
 
 **Option B — your own PostgreSQL.** Create the database, then update `server/.env` with your host, port, user and password:
 
@@ -212,7 +263,27 @@ npm run dev
 
 This runs the API on **http://localhost:4000** and the web client on **http://localhost:5173** at the same time.
 
-Open **http://localhost:5173** in your browser. Press `Ctrl+C` to stop both.
+Open **http://localhost:5173** in your browser.
+
+You can verify that the API can reach PostgreSQL with:
+
+```bash
+curl http://localhost:4000/api/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","database":"thebirthdates"}
+```
+
+Press `Ctrl+C` in the terminal running `npm run dev` to stop the API and frontend.
+
+When you are finished, stop the database container with:
+
+```bash
+npm run db:down
+```
 
 ## Troubleshooting
 
