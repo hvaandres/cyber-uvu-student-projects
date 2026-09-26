@@ -1,0 +1,987 @@
+<!--
+  ============================================================
+  CANVAS LMS PAGE - PART 1: DEVELOPER SETUP GUIDE
+  ============================================================
+  HOW TO USE THIS FILE:
+  1. Open your Canvas course -> Pages -> + Page
+  2. Give the page a title (e.g. "Part 1: Setting Up Your Tools")
+  3. In the Rich Content Editor toolbar, click the </> icon
+     (bottom-right corner) to switch to "Raw HTML Editor"
+  4. Copy EVERYTHING below this comment block and paste it in
+  5. Click "Save & Publish"
+
+  NOTE: Canvas removes <style> blocks, <script>, <head> and <body>.
+  Every style in this file is INLINE so it survives Canvas sanitizing.
+  ============================================================
+-->
+
+<div style="max-width: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.7; color: #2d3b45;">
+
+  <!-- ===================== PAGE HEADER ===================== -->
+  <div style="background-color: #2c3e50; color: #ffffff; padding: 24px 20px; border-radius: 6px; margin-bottom: 24px;">
+    <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 26px; line-height: 1.3;">Part 1: Setting Up Your Developer Tools</h1>
+    <p style="color: #ffffff; margin: 0; font-size: 15px;">A complete, step-by-step guide. No prior experience needed.</p>
+  </div>
+
+  <!-- ===================== WELCOME ===================== -->
+  <div style="background-color: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 6px; padding: 18px; margin-bottom: 28px;">
+    <h2 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">Read This First</h2>
+    <p style="margin: 0 0 12px 0;">Welcome! Before you can run the class project, your computer needs a few free tools installed. This page walks you through <strong>every single one</strong>, explains <strong>what it is</strong>, <strong>why you need it</strong>, and <strong>exactly what to click</strong>.</p>
+    <p style="margin: 0 0 12px 0;"><strong>Estimated time:</strong> 45&ndash;90 minutes, depending on your internet speed.</p>
+    <p style="margin: 0;"><strong>Do them in order.</strong> Some tools depend on earlier ones. Don't skip ahead.</p>
+  </div>
+
+  <!-- ===================== ROADMAP ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">What You Will Install Today</h2>
+
+  <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">#</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Tool</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">In Plain English</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Required?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">1</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Node.js</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Lets your computer run JavaScript code</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Yes</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">2</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>DBeaver</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Lets you look inside the database</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Yes</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">3</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Postman</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Lets you test your app's API without a website</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Yes</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">4</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Docker Desktop</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Runs the whole project in a pre-built box</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Yes</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">5</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>GitHub Copilot CLI</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">An AI helper that works inside your terminal</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Yes</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ===================== TERMINAL PRIMER ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Before We Start: What Is "The Terminal"?</h2>
+
+  <p>Almost every step below asks you to "open a terminal and run a command." If you've never done this, here's what that means.</p>
+
+  <p>The <strong>terminal</strong> (also called the command line, shell, or console) is a text-only way to talk to your computer. Instead of clicking icons, you type a command and press <strong>Enter</strong>.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>How to open it:</strong></p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;"><strong>Mac:</strong> Press <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">Cmd + Space</code>, type <em>Terminal</em>, press Enter.</li>
+      <li style="margin-bottom: 6px;"><strong>Windows:</strong> Press the Start button, type <em>PowerShell</em>, press Enter.</li>
+      <li style="margin-bottom: 0;"><strong>Linux:</strong> Press <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">Ctrl + Alt + T</code>.</li>
+    </ul>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Important:</strong> When you see a command in a black box on this page, type or paste <strong>only the command</strong>. Lines starting with <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">#</code> are comments for humans &mdash; the computer ignores them.</p>
+  </div>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== STEP 1: NODE.JS ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Step 1 &mdash; Install JavaScript (Node.js)</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">1.1 &mdash; What is JavaScript?</h3>
+
+  <p>JavaScript is the programming language our project is written in. It was originally built to run <strong>inside web browsers</strong> (Chrome, Safari, Firefox) to make web pages interactive &mdash; things like dropdown menus, form validation, and pop-ups.</p>
+
+  <p>But our project also needs JavaScript to run on the <strong>server side</strong> &mdash; the part that talks to the database and handles logins. Browsers can't do that. So we install a program called <strong>Node.js</strong>.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Simple analogy:</strong> JavaScript is a <em>recipe</em>. A browser is a kitchen that can only cook certain recipes. Node.js is a full professional kitchen installed on your laptop, so you can cook <em>any</em> JavaScript recipe &mdash; even ones a browser can't handle.</p>
+  </div>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Common point of confusion:</strong> You cannot "install JavaScript" by itself. The language has no installer. When your instructor says "install JavaScript," they mean <strong>install Node.js</strong>. These are the same task.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">1.2 &mdash; What is npm, and why do I keep hearing about it?</h3>
+
+  <p>When you install Node.js, you automatically get a second tool called <strong>npm</strong> (Node Package Manager). You do <em>not</em> install it separately.</p>
+
+  <p>npm is an <strong>app store for code</strong>. Other developers write useful chunks of code ("packages" or "libraries") and publish them for free. Instead of writing everything yourself, you download theirs.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Real example:</strong> Building a web server from scratch is hundreds of lines of tricky code. Instead, you run one command:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">npm install express</div>
+    <p style="margin: 10px 0 0 0;">&hellip;and you now have a fully working web server library. That's the whole point of npm.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">1.3 &mdash; Download and install</h3>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 1.3a &mdash; Go to the official site</strong></p>
+    <p style="margin: 0 0 10px 0;">Open <a href="https://nodejs.org/" target="_blank" rel="noopener" style="color: #0374b5;">https://nodejs.org</a> in your browser.</p>
+    <p style="margin: 0;">You will see two big green download buttons. <strong>Always pick the one labeled "LTS."</strong> LTS stands for <em>Long Term Support</em>, which means it is the stable, well-tested version. The other button ("Current") has the newest experimental features and can break things. Beginners should never use it.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 1.3b &mdash; Run the installer</strong></p>
+    <p style="margin: 0 0 8px 0;">Find the downloaded file (usually in your <em>Downloads</em> folder) and double-click it.</p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;"><strong>Mac:</strong> the file ends in <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">.pkg</code></li>
+      <li style="margin-bottom: 6px;"><strong>Windows:</strong> the file ends in <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">.msi</code></li>
+    </ul>
+    <p style="margin: 8px 0 0 0;">Click <strong>Next / Continue</strong> through every screen and <strong>accept all the default settings</strong>. Do not change anything. You may be asked for your computer password &mdash; that is normal and expected.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 1.3c &mdash; Close and REOPEN your terminal</strong></p>
+    <p style="margin: 0;">This step matters. If a terminal window was already open during installation, it does not know Node.js exists yet. Quit the terminal completely and open a fresh one.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 1.3d &mdash; Verify it worked</strong></p>
+    <p style="margin: 0 0 10px 0;">In your new terminal, type this and press Enter:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">node --version</div>
+    <p style="margin: 10px 0 10px 0;">Then run this one:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">npm --version</div>
+  </div>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>What success looks like</strong></p>
+    <p style="margin: 0 0 8px 0;">You should see version numbers printed, something like:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">v22.11.0
+10.9.0</div>
+    <p style="margin: 8px 0 0 0;">The exact numbers will differ from the example and that is completely fine. Seeing <em>any</em> version number means it worked.</p>
+  </div>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>If you see "command not found" instead</strong></p>
+    <ol style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Fully quit the terminal app (not just close the window) and reopen it.</li>
+      <li style="margin-bottom: 6px;">Restart your computer &mdash; this genuinely fixes it most of the time.</li>
+      <li style="margin-bottom: 0;">Still broken? Post in the course discussion board with a screenshot of what you typed and what you saw.</li>
+    </ol>
+  </div>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== STEP 2: DATABASE ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Step 2 &mdash; Install a Database Tool (DBeaver)</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.1 &mdash; What is a database?</h3>
+
+  <p>A <strong>database</strong> is an organized place where your application permanently stores information &mdash; user accounts, passwords, orders, messages, log entries, and so on.</p>
+
+  <p>Picture a giant, extremely fast Excel workbook. It has multiple sheets (called <strong>tables</strong>), each sheet has columns (<strong>fields</strong>) and rows (<strong>records</strong>). Unlike Excel, a database can hold millions of rows and find any one of them in a fraction of a second, and many people can safely use it at the same time.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Example:</strong> When you log into Canvas, the site takes your username, asks the database "do you have a row with this username?", checks your password, and lets you in. That entire lookup happens in milliseconds across tens of thousands of students.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.2 &mdash; Why do I need a separate tool for it?</h3>
+
+  <p>The database itself has no screen and no buttons. It's a background program that only understands a language called <strong>SQL</strong>. To actually see and work with your data, you need a <strong>database client</strong> &mdash; a visual app that connects to the database and shows you the tables.</p>
+
+  <p>With a database client you can:</p>
+
+  <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Browse every table and see the real data inside it</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Confirm that your code actually saved the record it claimed to save</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Write and test SQL queries safely before putting them in your code</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Manually add, edit, or delete rows while testing</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Diagnose bugs &mdash; is the bug in your code, or is the data itself wrong?</li>
+  </ul>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Why this saves you hours:</strong> Without a database tool, when a feature breaks you are guessing. With one, you look directly at the table and instantly know whether the data arrived. This is the single most useful debugging skill in this course.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.3 &mdash; Which tool should I use?</h3>
+
+  <p>Several free tools do this job. Here are the most common ones so you recognize the names:</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Tool</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Works With</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Cost</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #e8f5e9;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>DBeaver</strong><br /><em>(use this one)</em></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">MySQL, PostgreSQL, SQLite, SQL Server, Oracle, and ~80 more</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Free</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">One tool for every database. Works on Mac, Windows, Linux.</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">MySQL Workbench</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">MySQL only</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Free</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Made by MySQL. Useless if you switch databases later.</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">pgAdmin</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">PostgreSQL only</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Free</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Runs in your browser. Interface feels dated.</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">TablePlus</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Most databases</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Free trial, then paid</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Nicest looking, but the free version limits open tabs.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Our recommendation:</strong> Install <strong>DBeaver Community Edition</strong>. It's free forever, connects to any database you'll meet in this course or your career, and all screenshots in this class use it. If you already have one of the others installed and prefer it, that's fine &mdash; the concepts are identical.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.4 &mdash; Install DBeaver</h3>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 2.4a &mdash; Download</strong></p>
+    <p style="margin: 0 0 8px 0;">Go to <a href="https://dbeaver.io/download/" target="_blank" rel="noopener" style="color: #0374b5;">https://dbeaver.io/download/</a></p>
+    <p style="margin: 0;">Choose <strong>Community Edition</strong> (the free one) and pick the installer matching your computer. On a Mac, check whether you have an Apple Silicon chip (M1/M2/M3/M4) or an Intel chip &mdash; click the Apple menu &rarr; <em>About This Mac</em> to find out, then download the matching file.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 2.4b &mdash; Install and open</strong></p>
+    <p style="margin: 0;">Run the installer with all default settings. On Mac, drag the DBeaver icon into your Applications folder. The first time you open it, macOS may warn that it was downloaded from the internet &mdash; click <strong>Open</strong> to continue.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 2.4c &mdash; Create your first connection</strong></p>
+    <ol style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Click the <strong>plug icon with a "+"</strong> in the top-left toolbar (or use the menu: <em>Database &rarr; New Database Connection</em>).</li>
+      <li style="margin-bottom: 6px;">A grid of database logos appears. Pick the one your project uses &mdash; most likely <strong>PostgreSQL</strong> or <strong>MySQL</strong>. Ask your instructor if you're not sure.</li>
+      <li style="margin-bottom: 6px;">Fill in the connection fields (explained in the table below).</li>
+      <li style="margin-bottom: 6px;">DBeaver will say <em>"Download driver files?"</em> &mdash; click <strong>Download</strong>. This is normal and only happens once per database type.</li>
+      <li style="margin-bottom: 6px;">Click <strong>Test Connection</strong> in the bottom-left corner.</li>
+      <li style="margin-bottom: 0;">If you see a green "Connected" message, click <strong>Finish</strong>.</li>
+    </ol>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.5 &mdash; What each connection field means</h3>
+
+  <p>These five fields confuse almost everyone the first time. Here's what each one actually is:</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Field</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">What It Means</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Typical Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Host</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Which computer the database lives on. <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">localhost</code> means "this very laptop."</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">localhost</code></td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Port</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Which numbered "door" on that computer to knock on. Each database type has a standard door number.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">5432</code> PostgreSQL<br /><code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">3306</code> MySQL</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Database</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">One server can host many databases. This is the name of the specific one you want.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">app_db</code></td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Username</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Your database login name. This is separate from your computer login.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">postgres</code></td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Password</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Your database password.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Provided by your instructor or set in the project files</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Where do I find these values?</strong> For this course they will usually be listed in the project's <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">.env</code> file, the <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">docker-compose.yml</code> file, or the project README. Look for lines containing <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DB_HOST</code>, <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DB_PORT</code>, <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DB_USER</code>, or <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DATABASE_URL</code>.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">2.6 &mdash; Your first query</h3>
+
+  <p>Once connected, expand your database in the left sidebar until you see <strong>Schemas &rarr; public &rarr; Tables</strong>. Double-click any table to view its contents.</p>
+
+  <p>To run your own query, open a SQL editor (<em>SQL Editor &rarr; New SQL Script</em>) and try:</p>
+
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;">-- Show me the first 10 rows of the users table
+SELECT * FROM users LIMIT 10;</div>
+
+  <p>Press <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">Ctrl + Enter</code> (Windows) or <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">Cmd + Enter</code> (Mac) to run it. Results appear in a grid below.</p>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Two safety rules</strong></p>
+    <ol style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;"><strong>Never share your database credentials.</strong> Don't paste them into Discord, a public GitHub repo, or a screenshot. Treat them like your bank PIN.</li>
+      <li style="margin-bottom: 0;"><strong>Be very careful with <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DELETE</code> and <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">UPDATE</code>.</strong> Running <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DELETE FROM users;</code> without a <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">WHERE</code> clause erases every single user. There is no undo button.</li>
+    </ol>
+  </div>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== STEP 3: POSTMAN ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Step 3 &mdash; Install Postman (for Testing APIs)</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.1 &mdash; What is an API?</h3>
+
+  <p><strong>API</strong> stands for Application Programming Interface. Ignore the jargon &mdash; here's what it really is: <strong>an API is the set of addresses your application listens on, so other programs can ask it for things.</strong></p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>The restaurant analogy:</strong></p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">You (the <strong>client</strong>) sit at a table. You can't walk into the kitchen.</li>
+      <li style="margin-bottom: 6px;">The <strong>menu</strong> lists what you're allowed to order &mdash; that's the API documentation.</li>
+      <li style="margin-bottom: 6px;">The <strong>waiter</strong> takes your order to the kitchen &mdash; that's the API request.</li>
+      <li style="margin-bottom: 0;">The kitchen (the <strong>server + database</strong>) prepares it and the waiter brings back your food &mdash; that's the API response.</li>
+    </ul>
+    <p style="margin: 10px 0 0 0;">You never need to know how the kitchen works. You just need to know what to order and what comes back. That's exactly how APIs work.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.2 &mdash; What is Postman, and why do we use it?</h3>
+
+  <p><strong>Postman</strong> is a free app that lets you send requests to an API and see exactly what comes back &mdash; <strong>without writing a single line of code</strong> and without needing a finished website.</p>
+
+  <p>Here's the problem it solves. Imagine your team is building a login feature. The backend developer finishes the login API on Monday, but the front-end login page won't be ready until Friday. How do you test the API? You can't &mdash; there are no buttons to click.</p>
+
+  <p>Postman <em>is</em> those buttons. You type the address, hit Send, and see the response instantly.</p>
+
+  <p>Specific reasons we use it in this course:</p>
+
+  <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>Test the backend before the front end exists.</strong> No waiting on teammates.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>Isolate bugs.</strong> If the page is broken but Postman shows correct data, the bug is in the front end &mdash; not the server. This cuts debugging time enormously.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>See the real error.</strong> A browser might just show "something went wrong." Postman shows you the exact status code and error message.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>Test edge cases easily.</strong> What if the email field is blank? What if the password is 500 characters? Just edit and resend.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>Save and share your tests.</strong> Postman "Collections" let you save every request and share the whole set with your group.</li>
+  </ul>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.3 &mdash; Install Postman</h3>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 3.3a &mdash; Download</strong></p>
+    <p style="margin: 0;">Go to <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener" style="color: #0374b5;">https://www.postman.com/downloads/</a> and download the free desktop app for your operating system.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 3.3b &mdash; Install and sign in</strong></p>
+    <p style="margin: 0;">Run the installer. Postman will ask you to create a free account. You can use your student email. There is a small "Continue without an account" link if you prefer &mdash; but signing in lets you sync your saved requests across devices, which is genuinely useful.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 3.3c &mdash; Send your very first request</strong></p>
+    <p style="margin: 0 0 8px 0;">We'll use a free public practice API so you can confirm Postman works before touching the class project.</p>
+    <ol style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Click the <strong>+</strong> button to open a new request tab.</li>
+      <li style="margin-bottom: 6px;">Leave the method dropdown on <strong>GET</strong>.</li>
+      <li style="margin-bottom: 6px;">Paste this into the URL bar: <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">https://jsonplaceholder.typicode.com/users/1</code></li>
+      <li style="margin-bottom: 0;">Click the blue <strong>Send</strong> button.</li>
+    </ol>
+  </div>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>What success looks like</strong></p>
+    <p style="margin: 0 0 8px 0;">The bottom panel fills with data like this, and you'll see a green <strong>200 OK</strong> near the top right:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">{
+  "id": 1,
+  "name": "Leanne Graham",
+  "username": "Bret",
+  "email": "Sincere@april.biz"
+}</div>
+    <p style="margin: 8px 0 0 0;">That format is called <strong>JSON</strong> &mdash; it's how APIs send data. It's just labels and values inside curly braces.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.4 &mdash; The parts of a request</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Part</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">What It Does</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Restaurant Equivalent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>URL</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The address you're sending the request to</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Which restaurant, and which table</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Method</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">What kind of action you want</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Ordering vs. paying vs. cancelling</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Headers</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Extra info, like your login token or data format</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Showing your ID or stating an allergy</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Body</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The actual data you're sending (only for POST/PUT)</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The details of your order</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Response</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">What the server sends back to you</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The food that arrives</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.5 &mdash; The four methods you'll use constantly</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Method</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Purpose</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>GET</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Read data. Never changes anything.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Load the list of students</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>POST</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Create something new.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Register a new account</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>PUT / PATCH</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Update something that already exists.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Change your email address</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>DELETE</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Remove something.</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Delete a post</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.6 &mdash; Testing your own project's API</h3>
+
+  <p>Once your project is running locally, your API lives at <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">http://localhost:3000</code> (the port number may differ &mdash; check your project README).</p>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Example A &mdash; Fetch all users (GET)</strong></p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">Method: GET
+URL:    http://localhost:3000/api/users</div>
+    <p style="margin: 10px 0 0 0;">Nothing else to fill in. Just hit Send.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Example B &mdash; Create a user (POST)</strong></p>
+    <p style="margin: 0 0 8px 0;">This one needs a body. In Postman click the <strong>Body</strong> tab, select <strong>raw</strong>, then choose <strong>JSON</strong> from the dropdown on the right.</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">Method: POST
+URL:    http://localhost:3000/api/users
+
+Body (raw, JSON):
+{
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "password": "SuperSecret123"
+}</div>
+    <p style="margin: 10px 0 0 0;">Hit Send, then switch to DBeaver and run <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">SELECT * FROM users;</code>. Seeing Ada appear in the table is the moment it all clicks.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">3.7 &mdash; Reading status codes</h3>
+
+  <p>Every response includes a three-digit number. Learn these five and you'll diagnose most problems instantly:</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Code</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Meaning</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">What To Do</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #e8f5e9;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>200 / 201</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Success</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Nothing. It worked.</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>400</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Bad Request &mdash; your data was wrong or malformed</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Check your JSON body for typos or missing fields</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>401 / 403</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Not logged in / not allowed</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">You need to send an auth token in the Headers</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>404</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Not Found &mdash; that address doesn't exist</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Check the URL spelling and the port number</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>500</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Server crashed</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The bug is in your backend code &mdash; read the terminal logs</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== STEP 4: DOCKER ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Step 4 &mdash; Understand and Install Docker</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.1 &mdash; What does Docker actually mean?</h3>
+
+  <p><strong>Docker</strong> packages an application together with <em>everything</em> it needs to run &mdash; the code, the correct version of Node.js, the database, the settings, even a mini operating system &mdash; into one sealed unit called a <strong>container</strong>.</p>
+
+  <p>That container then runs <strong>identically</strong> on any computer that has Docker installed. Your Mac, your classmate's Windows laptop, and the production server in a data center all run the exact same thing.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>The shipping container analogy (this is literally where the name comes from):</strong></p>
+    <p style="margin: 0 0 10px 0;">Before standardized shipping containers, moving goods overseas was chaos &mdash; barrels, crates, and sacks all had to be loaded by hand and everything was handled differently.</p>
+    <p style="margin: 0;">Then someone invented the metal shipping container. Now it doesn't matter whether it holds bananas or car parts &mdash; every crane, truck, and ship handles it the same way. Docker did this for software. The server doesn't care what's inside your container; it just runs it.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.2 &mdash; Why do we use Docker in this course?</h3>
+
+  <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>It kills "but it works on my machine."</strong> This is the most common and most frustrating problem in software teams. One person has Node 18, another has Node 22, a third is on Windows &mdash; and the code breaks for reasons nobody can reproduce. Docker makes everyone's setup byte-for-byte identical.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>One command instead of twenty.</strong> Without Docker you'd manually install a database server, create users, create tables, configure ports, and set environment variables. With Docker you type <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">docker compose up</code> and it's all done.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>It keeps your laptop clean.</strong> The database runs inside a container, not installed on your actual system. Done with the course? Delete the container and every trace is gone.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>You can break things safely.</strong> Corrupt your database while experimenting? Destroy the container, run one command, get a fresh one in seconds.</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span><strong>It's an industry standard.</strong> Docker appears in a huge share of developer job postings. Learning it here is directly career-relevant.</li>
+  </ul>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.3 &mdash; The four words you need to know</h3>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Term</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">What It Is</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Baking Analogy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Dockerfile</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">A text file listing the steps to build your app's environment</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The written recipe</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Image</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The finished, packaged result of following that file</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">A frozen ready-to-bake cake</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Container</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">A running, live copy of an image</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">The cake, baked and on the table</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;"><strong>Docker Compose</strong></td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">A tool that starts several containers at once and wires them together</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Running the whole bakery, not just one oven</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>The key distinction:</strong> An <em>image</em> is stored on disk and does nothing. A <em>container</em> is that image actually running. One image can create many containers, the same way one recipe can bake many cakes.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.4 &mdash; What our project's setup looks like</h3>
+
+  <p>Our project uses Docker Compose to run several pieces side by side:</p>
+
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;">Container 1:  Node.js web application   ->  port 3000
+Container 2:  PostgreSQL database       ->  port 5432
+Container 3:  Redis cache (optional)    ->  port 6379
+
+All three run on a private network and can talk to each other.</div>
+
+  <p>Because they share that private network, your app can reach the database using the simple name <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">db</code> instead of an IP address. You'll see that name in the project's config files.</p>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.5 &mdash; Install Docker Desktop</h3>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 4.5a &mdash; Download</strong></p>
+    <p style="margin: 0 0 8px 0;">Go to <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener" style="color: #0374b5;">https://www.docker.com/products/docker-desktop/</a></p>
+    <p style="margin: 0;">On Mac, pick the build matching your chip (Apple Silicon or Intel). On Windows, Docker needs a feature called WSL 2 &mdash; the installer will offer to set this up for you, so just say yes to its prompts.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 4.5b &mdash; Install, then LAUNCH the app</strong></p>
+    <p style="margin: 0;">Run the installer, then actually <strong>open Docker Desktop</strong> and leave it running. Wait until the whale icon in your menu bar (Mac) or system tray (Windows) stops animating. Docker commands only work while Docker Desktop is running &mdash; this trips up nearly everyone at least once.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 4.5c &mdash; Verify</strong></p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">docker --version
+docker compose version</div>
+    <p style="margin: 10px 0 0 0;">Both should print version numbers.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">4.6 &mdash; The five Docker commands you'll actually use</h3>
+
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;"># Start everything defined in docker-compose.yml
+docker compose up
+
+# Same, but run in the background so you get your terminal back
+docker compose up -d
+
+# See which containers are currently running
+docker ps
+
+# Read the logs (this is where error messages appear)
+docker compose logs -f
+
+# Stop everything
+docker compose down</div>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Careful:</strong> <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">docker compose down -v</code> adds a <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">-v</code> that also <strong>deletes all your database data</strong>. That's useful when you want a clean slate, but it is permanent. Know which one you're typing.</p>
+  </div>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== STEP 5: COPILOT CLI ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Step 5 &mdash; Set Up GitHub Copilot CLI</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.1 &mdash; What is GitHub Copilot CLI?</h3>
+
+  <p>You may have heard of GitHub Copilot as the tool that autocompletes code inside an editor. <strong>Copilot CLI is different and more powerful.</strong> It's an AI agent that runs in your <strong>terminal</strong>, can read the files in your project, run commands, and make edits &mdash; while explaining each step to you.</p>
+
+  <p>You describe a goal in plain English. Copilot figures out the steps, shows you what it wants to do, and <strong>asks your permission</strong> before changing anything or running a command.</p>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Why this matters for you:</strong> You get the project running <em>and</em> learn how it works at the same time. Instead of blindly copying commands from a README, you can ask "what does this command do and why?" and get a real answer tied to your actual code.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.2 &mdash; Before you install</h3>
+
+  <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Node.js installed (Step 1) &mdash; version 22 or newer</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>A GitHub account</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>An active Copilot subscription</li>
+  </ul>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>Students get Copilot free.</strong> Apply for the GitHub Student Developer Pack at <a href="https://education.github.com/pack" target="_blank" rel="noopener" style="color: #0374b5;">education.github.com/pack</a> using your university email. Approval usually takes a few minutes to a couple of days &mdash; <strong>apply now</strong> so you're not blocked later.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.3 &mdash; Install it</h3>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 5.3a &mdash; Install via npm</strong></p>
+    <p style="margin: 0 0 8px 0;">Remember npm from Step 1? Here's your first real use of it:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">npm install -g @github/copilot</div>
+    <p style="margin: 10px 0 0 0;">The <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">-g</code> means "global" &mdash; install it once for the whole computer, not just one project folder.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 5.3b &mdash; Start it</strong></p>
+    <p style="margin: 0 0 8px 0;">Navigate into your project folder first, then launch:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">cd path/to/your/project
+copilot</div>
+    <p style="margin: 10px 0 0 0;">Being inside the project folder matters &mdash; that's how Copilot can see your files.</p>
+  </div>
+
+  <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 10px 0;"><strong>Step 5.3c &mdash; Log in</strong></p>
+    <p style="margin: 0 0 8px 0;">The first time it runs, type this at the Copilot prompt:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">/login</div>
+    <p style="margin: 10px 0 0 0;">It will display a code and open your browser. Paste the code, approve access, and return to the terminal.</p>
+  </div>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Useful built-in commands once you're inside Copilot:</strong></p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;"><code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">/help</code> &mdash; list everything you can do</li>
+      <li style="margin-bottom: 6px;"><code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">/clear</code> &mdash; wipe the conversation and start fresh</li>
+      <li style="margin-bottom: 0;"><code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">/exit</code> &mdash; quit back to your normal terminal</li>
+    </ul>
+  </div>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Alternative: the older <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">gh copilot</code> extension</strong></p>
+    <p style="margin: 0 0 8px 0;">You may find tutorials referencing a different, older tool. It only <em>suggests</em> and <em>explains</em> single commands &mdash; it cannot read your project or edit files. If you want it as well:</p>
+    <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 12px 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6;">gh extension install github/gh-copilot
+gh copilot suggest "find and kill the process using port 3000"
+gh copilot explain "docker compose up -d"</div>
+    <p style="margin: 10px 0 0 0;">For this course, <strong>use the <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">copilot</code> command</strong> from Step 5.3a. The older one is optional.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.4 &mdash; How to actually work with it</h3>
+
+  <p>Copilot works in a loop: <strong>you describe a goal &rarr; it proposes a plan &rarr; you approve &rarr; it acts &rarr; it reports back.</strong></p>
+
+  <p>When it wants to run a command or edit a file, it pauses and asks. <strong>Read what it's proposing before you say yes.</strong> That pause is not an annoyance &mdash; it's your chance to learn what the command does and to catch mistakes.</p>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Academic integrity &mdash; read this carefully</strong></p>
+    <p style="margin: 0 0 8px 0;">Using Copilot is encouraged in this course. <strong>Submitting code you cannot explain is not.</strong></p>
+    <p style="margin: 0;">You may be asked in class to walk through any part of your submission. If Copilot writes something and you don't understand it, the fix is simple and takes ten seconds: ask it <em>"explain what you just wrote, line by line, as if I'm new to this."</em> Do that every time.</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.5 &mdash; What makes a good prompt?</h3>
+
+  <p>The quality of the answer depends almost entirely on the quality of the question. Compare:</p>
+
+  <table style="width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;" border="1">
+    <thead>
+      <tr style="background-color: #2c3e50;">
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Weak Prompt</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Strong Prompt</th>
+        <th style="border: 1px solid #c7cdd1; padding: 10px; text-align: left; color: #ffffff;" scope="col">Why It's Better</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"fix my code"</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"Running <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">npm start</code> gives ECONNREFUSED on port 5432. Find the cause and explain it before fixing."</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Gives the exact error and asks for understanding first</td>
+      </tr>
+      <tr style="background-color: #f8f9fa;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"add login"</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"Add a POST /api/login route that checks email and password against the users table and returns a JWT. Follow the patterns already used in this project."</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Specifies the route, behavior, and existing conventions</td>
+      </tr>
+      <tr style="background-color: #ffffff;">
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"what is this"</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">"Explain what <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">server.js</code> does, in order, assuming I've never used Express."</td>
+        <td style="border: 1px solid #c7cdd1; padding: 10px;">Names the file and states your knowledge level</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>A reliable formula:</strong></p>
+    <p style="margin: 0;"><em>[What I'm trying to do] + [What's happening instead] + [What I already tried] + [Explain it to me at my level]</em></p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.6 &mdash; Copy-paste prompts to get you started</h3>
+
+  <p>Paste these directly into Copilot. They're ordered roughly the way you'll need them.</p>
+
+  <p style="margin: 18px 0 8px 0;"><strong>Getting oriented in a new project</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"I'm a beginner and just cloned this repository. Give me a tour: what does this project do, what are the main folders, and which file starts the application?"</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Read the README and the package.json, then give me the exact list of commands I need to run to get this project working on my machine. Explain what each one does before I run it."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Is there anything I need to configure before starting, like a .env file or database credentials? Show me what values I need and where to get them."</p>
+  </div>
+
+  <p style="margin: 18px 0 8px 0;"><strong>Getting the project running</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Walk me through starting this project step by step. Pause after each step so I can confirm it worked before we continue."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Explain this project's docker-compose.yml to me line by line. What services does it start and what does each one do?"</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"I want to connect to this project's database with DBeaver. Look at the config files and tell me the exact host, port, database name, username, and password to enter."</p>
+  </div>
+
+  <p style="margin: 18px 0 8px 0;"><strong>Understanding the code</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"List every API endpoint in this project with its method, URL, what it expects, and what it returns. Format it as a table I can use in Postman."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Trace what happens when a user submits the login form &mdash; follow the request from the browser all the way to the database and back. Explain it like a story."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Show me the database schema. What tables exist, what columns do they have, and how are they related to each other?"</p>
+  </div>
+
+  <p style="margin: 18px 0 8px 0;"><strong>When something breaks</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"I got this error: [paste the FULL error text]. Explain in plain English what it means, why it happened, and how to fix it. Don't change any files until I approve."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"My API returns 500 when I POST to /api/users. Check the server logs and the route code, find the bug, and explain what's wrong before fixing it."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Something is already using port 3000 and my app won't start. Help me find out what it is and safely stop it."</p>
+  </div>
+
+  <p style="margin: 18px 0 8px 0;"><strong>Learning while you build</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"You just wrote that code. Now explain it to me line by line as if I've never seen JavaScript, and tell me why you chose that approach over the alternatives."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Quiz me. Ask me five questions about how this project works, wait for my answers, then tell me what I got wrong and why."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Don't write the code for me. I want to implement this myself. Give me hints and point me to the right files, and tell me if my approach is wrong."</p>
+  </div>
+
+  <p style="margin: 18px 0 8px 0;"><strong>Git and submitting work</strong></p>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Show me what I've changed, then help me create a branch, commit with a clear message, and push it. Explain each git command as we go."</p>
+  </div>
+
+  <div style="background-color: #e7f3ff; border-left: 5px solid #2196F3; padding: 14px; margin: 10px 0; border-radius: 4px;">
+    <p style="margin: 0;">"Before I submit, review my changes for bugs, security issues, and anything that doesn't match this project's existing style."</p>
+  </div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">5.7 &mdash; Do and don't</h3>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Do</strong></p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Paste the <strong>complete</strong> error message, not a summary of it</li>
+      <li style="margin-bottom: 6px;">Say you're a beginner &mdash; it genuinely adjusts its explanations</li>
+      <li style="margin-bottom: 6px;">Ask "why" after it does something, every time</li>
+      <li style="margin-bottom: 6px;">Read each proposed command before approving it</li>
+      <li style="margin-bottom: 0;">Use <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">/clear</code> when switching to an unrelated task</li>
+    </ul>
+  </div>
+
+  <div style="background-color: #f8d7da; border-left: 5px solid #dc3545; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Don't</strong></p>
+    <ul style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Approve commands you don't understand &mdash; ask first, it's free</li>
+      <li style="margin-bottom: 6px;">Paste real passwords, API keys, or personal data into the chat</li>
+      <li style="margin-bottom: 6px;">Assume it's always right &mdash; AI confidently makes mistakes</li>
+      <li style="margin-bottom: 6px;">Let it run destructive commands (<code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">rm -rf</code>, <code style="background-color: #ffffff; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">DROP TABLE</code>) without fully understanding them</li>
+      <li style="margin-bottom: 0;">Submit work you can't explain out loud</li>
+    </ul>
+  </div>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== TROUBLESHOOTING ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Troubleshooting</h2>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">"command not found" after installing something</h3>
+  <p><strong>Cause:</strong> Your terminal loaded its settings before the tool was installed.<br />
+  <strong>Fix:</strong> Fully quit the terminal application and reopen it. If that fails, restart your computer. This resolves it the vast majority of the time.</p>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">"EACCES: permission denied" when running npm install -g</h3>
+  <p><strong>Cause:</strong> npm is trying to write to a protected system folder.<br />
+  <strong>Fix:</strong> Do <strong>not</strong> use <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">sudo</code> &mdash; it causes worse problems later. Instead, point npm at a folder you own:</p>
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;">mkdir -p ~/.npm-global
+npm config set prefix ~/.npm-global
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc</div>
+  <p>Then run your <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">npm install -g</code> command again.</p>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">"Cannot connect to the Docker daemon"</h3>
+  <p><strong>Cause:</strong> Docker Desktop isn't running.<br />
+  <strong>Fix:</strong> Open the Docker Desktop application and wait for the whale icon to go steady. Installing Docker is not the same as running it.</p>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">"Port 3000 is already in use"</h3>
+  <p><strong>Cause:</strong> An old copy of your app is still running in the background.<br />
+  <strong>Fix (Mac/Linux):</strong></p>
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;"># See what is using the port
+lsof -i :3000
+
+# Stop it (replace 1234 with the PID from the output above)
+kill -9 1234</div>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">DBeaver says "Connection refused"</h3>
+  <p>Work through these in order:</p>
+  <ol style="margin: 12px 0 12px 22px;">
+    <li style="margin-bottom: 6px;">Is the database actually running? Run <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">docker ps</code> and confirm you see a database container.</li>
+    <li style="margin-bottom: 6px;">Is the port right? PostgreSQL uses 5432, MySQL uses 3306.</li>
+    <li style="margin-bottom: 6px;">Is the host <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">localhost</code>? Note that inside Docker the app uses the service name (like <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">db</code>), but DBeaver on your laptop must use <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">localhost</code>. This catches a lot of people.</li>
+    <li style="margin-bottom: 0;">Double-check the username and password against the project's <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">.env</code> or <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">docker-compose.yml</code>.</li>
+  </ol>
+
+  <h3 style="color: #34495e; font-size: 18px; margin: 20px 0 8px 0;">Postman says "Could not send request"</h3>
+  <p><strong>Cause:</strong> Nothing is listening at that address.<br />
+  <strong>Fix:</strong> Confirm your app is actually running, check for typos in the URL, and make sure you used <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">http://</code> and not <code style="background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: Monaco, Consolas, monospace;">https://</code> for localhost.</p>
+
+  <hr style="border: none; border-top: 2px solid #e8eaec; margin: 36px 0;" />
+
+  <!-- ===================== CHECKLIST ===================== -->
+  <h2 style="color: #2c3e50; font-size: 22px; border-bottom: 3px solid #2c3e50; padding-bottom: 8px; margin: 0 0 16px 0;">Final Checklist</h2>
+
+  <p>Run each command below. If every one prints a version number, you are fully set up.</p>
+
+  <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.6; margin: 12px 0;">node --version
+npm --version
+docker --version
+docker compose version
+copilot --version</div>
+
+  <p>Plus these three visual checks:</p>
+
+  <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>DBeaver opens and I created at least one connection</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Postman opens and my test request returned 200 OK</li>
+    <li style="padding: 6px 0 6px 26px; position: relative;"><span style="position: absolute; left: 0; color: #28a745; font-weight: bold;">&#10003;</span>Docker Desktop is running (whale icon visible and steady)</li>
+  </ul>
+
+  <div style="background-color: #d4edda; border-left: 5px solid #28a745; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0;"><strong>All green?</strong> You're done with Part 1. Move on to Part 2, where we clone the project and run it for the first time.</p>
+  </div>
+
+  <div style="background-color: #d1ecf1; border-left: 5px solid #17a2b8; padding: 15px; margin: 16px 0; border-radius: 4px;">
+    <p style="margin: 0 0 8px 0;"><strong>Stuck on something?</strong> Post in the course discussion board and include:</p>
+    <ol style="margin: 0; padding-left: 22px;">
+      <li style="margin-bottom: 6px;">Your operating system and version</li>
+      <li style="margin-bottom: 6px;">The exact command you ran</li>
+      <li style="margin-bottom: 6px;">The complete error message, copied as text (not a photo of your screen)</li>
+      <li style="margin-bottom: 0;">What you already tried</li>
+    </ol>
+    <p style="margin: 8px 0 0 0;">Asking a clear question like this gets you a fast answer &mdash; and it's a professional skill worth practicing.</p>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <div style="background-color: #f5f5f5; border-top: 1px solid #c7cdd1; padding: 16px; margin-top: 32px; text-align: center; font-size: 13px; color: #6b7780; border-radius: 0 0 6px 6px;">
+    <p style="margin: 0;">Developer Setup Guide &mdash; Part 1 of the course series</p>
+  </div>
+
+</div>
